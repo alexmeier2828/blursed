@@ -1,7 +1,12 @@
 #include <stdlib.h>
 #include "buffer.h"
 
+// Macros
+#define IS_CURSER_SAFE(b, d)	\
+	(b->curser + d < b->capacity && 	\
+	b->curser + d >= 0)
 
+// Header Implementation
 CharBuffer* create_buffer(int capacity){
 	CharBuffer* bufferHandle;
 
@@ -27,8 +32,7 @@ void free_buffer(CharBuffer** pBufferHandle){
  * puts character to buffer and advances curser
  */
 void buffer_put_char_to_curser(CharBuffer* bufferHandle, char c){
-	if(bufferHandle->curser < bufferHandle->capacity &&
-	   bufferHandle->curser >= 0)	
+	if(IS_CURSER_SAFE(bufferHandle, 0))	
 	{
 		bufferHandle->contents[bufferHandle->curser] = c;
 		buffer_move_curser(bufferHandle, 1);
@@ -39,8 +43,7 @@ void buffer_put_char_to_curser(CharBuffer* bufferHandle, char c){
  * advances the curser d spaces 
  */
 int buffer_move_curser(CharBuffer* bufferHandle, int d){
-	if(bufferHandle->curser + d < bufferHandle->capacity &&
-	   bufferHandle->curser + d >= 0)	
+	if(IS_CURSER_SAFE(bufferHandle, d))	
 	{
 		bufferHandle->curser += d;
 		return 1; 
