@@ -1,3 +1,7 @@
+# project specific
+MicroEdit
+
+# cmake 
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
