@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <ncurses.h>
 #include "buffer.h"
 
 int main(int argc, char** argv){
@@ -10,12 +11,16 @@ int main(int argc, char** argv){
 
 	// get input from keyboard in a loop
 	while(1 == 1){
-		input_char = getchar();
+		initscr();
+		addstr("test");
+		refresh();
+
+		input_char = getch();
 
 		if(input_char != '\n')
 		{
 			buffer_put_char_to_curser(pBuffer, input_char);
-			printf("%s\n", pBuffer->contents);
+			addstr(pBuffer->contents);
 		}
 	}
 
