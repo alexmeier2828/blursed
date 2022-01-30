@@ -3,26 +3,100 @@
 #include <ncurses.h>
 #include "buffer.h"
 
-int main(int argc, char** argv){
-	CharBuffer* pBuffer;
-	char input_char; 
+#define BUFFER_SIZE 500
+#define KEY_ESCAPE 27
 
-	pBuffer = create_buffer(50);
+typedef enum {
+	NORMAL,
+	COMMAND,
+	INSERT
+} EditorModeEnum;
+
+// TODO move this into its own file so it can live on the heap
+// TODO buffer should be part of editor_state
+typedef struct {
+	EditorModeEnum mode;
+	int running; 
+} EditorState;
+
+// function definitions
+void normal_mode(EditorState* p_state, char input_char);
+void insert_mode(EditorState* p_state, char input_char, CharBuffer* p_buffer);
+void command_mode(EditorState* p_state, char input_char);
+
+int main(int argc, char** argv){
+	CharBuffer* p_buffer;
+	char input_char; 
+	EditorState editor_state;
+
+	// Curses setup
+	initscr();
+
+	// editor setup
+	p_buffer = create_buffer(BUFFER_SIZE);
+	editor_state.mode = NORMAL;
+	editor_state.running = TRUE;
 
 	// get input from keyboard in a loop
-	while(1 == 1){
-		initscr();
-		addstr("test");
-		refresh();
-
+	while(editor_state.running){
 		input_char = getch();
 
-		if(input_char != '\n')
-		{
-			buffer_put_char_to_curser(pBuffer, input_char);
-			addstr(pBuffer->contents);
+		//mode switch
+		switch(editor_state.mode){
+			case NORMAL:
+				normal_mode(&editor_state, input_char);
+				break;
+			case COMMAND:
+				command_mode(&editor_state, input_char);
+				break;
+			case INSERT:
+				insert_mode(&editor_state, input_char, p_buffer);
+				break;
+			default:
+				printf("ERROR: encountered non implemented state");
+				exit(1);
 		}
 	}
 
 	return 0; 
+}
+
+
+void normal_mode(EditorState* p_state, char input_char){
+	switch(input_char){
+		case ':':
+			p_state->mode = COMMAND;
+			break;
+		case 'i':
+			p_state->mode = INSERT;
+		// TODO handle movment here
+	}
+}
+
+void insert_mode(EditorState* p_state, char input_char, CharBuffer* p_buffer){
+	switch(input_char){
+		case KEY_BACKSPACE:
+			return;
+		case KEY_EXIT:
+			p_state->mode = NORMAL;
+			return; 
+	}
+
+	// TODO Move all handling of printing to the ncurses window to 
+	// buffer implementation file (or a new wrapper for buffer maybe)
+	clear();
+	buffer_put_char_to_curser(p_buffer, input_char);
+	addstr(p_buffer->contents);
+}
+
+void command_mode(EditorState* p_state, char input_char){
+	switch(input_char){
+		case 'q':
+			p_state->running = FALSE;
+			break;
+		case KEY_EXIT:
+			p_state->mode = NORMAL;
+			break;
+		// TODO commands for file manipulation
+	}
 }
