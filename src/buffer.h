@@ -7,6 +7,7 @@
 typedef struct BUFFER {
 	char* contents;
 	int capacity;
+	int curser; 
 } CharBuffer;
 
 /**
@@ -19,5 +20,15 @@ CharBuffer* create_buffer(int capacity);
  * Sets handle to null
  */
 void free_buffer(CharBuffer** pBufferHandle);
+
+/**
+ * puts character to buffer and advances curser
+ */
+void buffer_put_char_to_curser(CharBuffer* bufferHandle, char c);
+
+/**
+ * advances the curser d spaces 
+ */
+int buffer_move_curser(CharBuffer* bufferHandle, int d);
 
 #endif
