@@ -21,13 +21,13 @@ typedef struct {
 } EditorState;
 
 // function definitions
-void normal_mode(EditorState* p_state, char input_char);
-void insert_mode(EditorState* p_state, char input_char, CharBuffer* p_buffer);
-void command_mode(EditorState* p_state, char input_char);
+void normal_mode(EditorState* p_state, int input_char);
+void insert_mode(EditorState* p_state, int input_char, CharBuffer* p_buffer);
+void command_mode(EditorState* p_state, int input_char);
 
 int main(int argc, char** argv){
 	CharBuffer* p_buffer;
-	char input_char; 
+	int input_char; 
 	EditorState editor_state;
 
 	// Curses setup
@@ -65,22 +65,23 @@ int main(int argc, char** argv){
 }
 
 
-void normal_mode(EditorState* p_state, char input_char){
+void normal_mode(EditorState* p_state, int input_char){
 	switch(input_char){
 		case ':':
 			p_state->mode = COMMAND;
 			break;
 		case 'i':
 			p_state->mode = INSERT;
+			break;
 		// TODO handle movment here
 	}
 }
 
-void insert_mode(EditorState* p_state, char input_char, CharBuffer* p_buffer){
+void insert_mode(EditorState* p_state, int input_char, CharBuffer* p_buffer){
 	switch(input_char){
 		case KEY_BACKSPACE:
 			return;
-		case KEY_EXIT:
+		case KEY_ESCAPE:
 			p_state->mode = NORMAL;
 			return; 
 	}
@@ -88,16 +89,16 @@ void insert_mode(EditorState* p_state, char input_char, CharBuffer* p_buffer){
 	// TODO Move all handling of printing to the ncurses window to 
 	// buffer implementation file (or a new wrapper for buffer maybe)
 	clear();
-	buffer_put_char_to_curser(p_buffer, input_char);
+	buffer_put_char_to_curser(p_buffer, (char)input_char);
 	addstr(p_buffer->contents);
 }
 
-void command_mode(EditorState* p_state, char input_char){
+void command_mode(EditorState* p_state, int input_char){
 	switch(input_char){
 		case 'q':
 			p_state->running = FALSE;
 			break;
-		case KEY_EXIT:
+		case KEY_ESCAPE:
 			p_state->mode = NORMAL;
 			break;
 		// TODO commands for file manipulation
