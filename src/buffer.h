@@ -5,15 +5,14 @@
  * Header for struct to hold buffer stuff
  */
 typedef struct BUFFER {
-	char* contents;
-	int capacity;
-	int curser; 
+	WINDOW* p_win;		// Contents of buffer
+	char* file_str;
 } CharBuffer;
 
 /**
  * allocates space for a new charBuffer.  
  */
-CharBuffer* create_buffer(int capacity);
+CharBuffer* create_buffer(WINDOW* p_window, char* file_str);
 
 /**
  * Frees alocated memory for charBuffer;
@@ -24,11 +23,26 @@ void free_buffer(CharBuffer** pBufferHandle);
 /**
  * puts character to buffer and advances curser
  */
-void buffer_put_char_to_curser(CharBuffer* bufferHandle, char c);
+void bfr_put_char_to_curser(CharBuffer* p_buffer, char c);
 
 /**
  * advances the curser d spaces 
  */
-int buffer_move_curser(CharBuffer* bufferHandle, int d);
+int bfr_move_curser(CharBuffer* p_buffer, int x, int y);
+
+/**
+ * Clears buffer, prints to window
+ */
+void bfr_clear(CharBuffer* p_buffer);
+
+/**
+ * print buffer contents to curses window
+ */
+void bfr_refresh(CharBuffer* p_buffer);
+
+/**
+ * save buffer to file
+ */
+void bfr_save_to_file(CharBuffer* p_buffer);
 
 #endif
