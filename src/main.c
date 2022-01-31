@@ -14,6 +14,7 @@ typedef enum {
 
 // TODO move this into its own file so it can live on the heap
 // TODO buffer should be part of editor_state
+// TODO should have a seperate buffer instance for command mode
 typedef struct {
 	EditorModeEnum mode;
 	int running; 
@@ -54,10 +55,12 @@ int main(int argc, char** argv){
 				break;
 			default:
 				printf("ERROR: encountered non implemented state");
+				endwin();
 				exit(1);
 		}
 	}
 
+	endwin();
 	return 0; 
 }
 
