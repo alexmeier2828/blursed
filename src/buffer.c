@@ -55,7 +55,7 @@ void bfr_clear(CharBuffer* p_buffer){
  * print buffer contents to curses window
  */
 void bfr_put_window(CharBuffer* p_buffer){
-	wrefresh(p_buffer->p_win)
+	wrefresh(p_buffer->p_win); 
 }
 
 void bfr_save_to_file(CharBuffer* p_buffer){
