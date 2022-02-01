@@ -3,6 +3,7 @@ project(MicroEdit C)
 
 find_package(Curses)
 
+include_directories(./list)
 add_executable(MicroEdit 
 	main.c
 	buffer.c)
