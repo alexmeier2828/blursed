@@ -26,6 +26,7 @@ CharBuffer* create_buffer(WINDOW* p_window, char* file_str){
 
 void free_buffer(CharBuffer** pBufferHandle){
 	//TODO find out how to free memory for windows 
+	delwin((*pBufferHandle)->p_win);
 	free(*pBufferHandle);
 	*pBufferHandle = NULL;
 }
@@ -48,13 +49,13 @@ int bfr_move_curser(CharBuffer* p_buffer, int x, int y){
  * Clears buffer, prints to window
  */
 void bfr_clear(CharBuffer* p_buffer){
-	p_buffer->size = 0;
+	// TODO figure out how to clear curses window
 }
 
 /**
  * print buffer contents to curses window
  */
-void bfr_put_window(CharBuffer* p_buffer){
+void bfr_refresh(CharBuffer* p_buffer){
 	wrefresh(p_buffer->p_win); 
 }
 

@@ -32,15 +32,16 @@ int main(int argc, char** argv){
 	WINDOW* p_main_window;
 
 	// Curses setup
-	initscr();
-	//TODO Make new window to pass to buffer setup
-	// Something like this:
-	p_main_window = create_newwin(30, 30, 0, 0);
-	
-	
+	initscr();	/* Start curses mode */
+	cbreak();	/* disables line buffering */
 
+	// TODO better way to set window size
+	p_main_window = newwin(50, 50, 0, 0);
+	
 	// editor setup
-	p_buffer = create_buffer(p_main_window);
+	p_buffer = create_buffer(p_main_window, "");
+	bfr_refresh(p_buffer);
+
 	editor_state.mode = NORMAL;
 	editor_state.running = TRUE;
 
@@ -94,7 +95,7 @@ void insert_mode(EditorState* p_state, int input_char, CharBuffer* p_buffer){
 
 	// TODO Move all handling of printing to the ncurses window to 
 	// buffer implementation file (or a new wrapper for buffer maybe)
-	buffer_put_char_to_curser(p_buffer, (char)input_char);
+	bfr_put_char_to_curser(p_buffer, (char)input_char);
 }
 
 void command_mode(EditorState* p_state, int input_char){
