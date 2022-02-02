@@ -1,9 +1,12 @@
-#include <stdlib>
+#include <stdlib.h>
+#include <stdio.h>
 #include "linkedlist.h"
 
+// Macros
+#define safe_index(x, ub) (x >= 0 && x < ub)
+
 // Private functions
-//TODO implement this
-Link* link_at(int i);
+Link* link_at(Link* head, int i);
 
 /* 
  * alocate empty linked list
@@ -28,7 +31,7 @@ void free_ll(LList** pp_list, Action free_item){
 
 	while(link != NULL){
 		free_item(link->p_e);
-		next = link->next;
+		next = link->p_next;
 		free(link);
 		link = next;
 	}
@@ -47,9 +50,9 @@ void ll_push(LList* p_list, void* item){
 	new_link = malloc(sizeof(Link));
 	new_link->p_e = item;
 
-	if(p_list->head != null){
-		tail = p_list->p_next;
-		while(tail->p_next != null){
+	if(p_list->head != NULL){
+		tail = p_list->head;
+		while(tail->p_next != NULL){
 			tail = tail->p_next;
 		}
 
@@ -72,12 +75,7 @@ void ll_ins(LList* p_list, int i, void* item){
 	new_link->p_e = item;
 
 	if(i < p_list->size && i > 0){
-		insert_link = p_list->p_next;
-
-		for(ittr = 0; ittr < i; ittr++){
-			insert_link = insert_link->p_next;
-		}
-
+		insert_link = link_at(p_list->head, i - 1);
 		new_link->p_next = insert_link->p_next;
 		insert_link->p_next = new_link;
 	} else if(i == 0){
@@ -92,13 +90,82 @@ void ll_ins(LList* p_list, int i, void* item){
 /*
  * returns item at index;
  */
-void* ll_get(LList* p_list, int i);
+void* ll_get(LList* p_list, int i){
+	Link* target;
+
+	if(!safe_index(i, p_list->size)){
+		printf("ERROR index out of bounds");
+		exit(1);
+	}
+
+	target = link_at(p_list->head, i);
+
+	return target->p_e;
+}
 /*
  * remove item at index
  */
-void* ll_del(LList* p_list, int i);
+void* ll_del(LList* p_list, int i){
+	Link* left; 
+	Link* temp;
+	void* item; 
+
+	if(!safe_index(i, p_list->size)){
+		printf("ERROR index out of bounds");
+		exit(1);
+	}
+
+	left = link_at(p_list->head, i - 1);
+	temp = left->p_next;
+	left->p_next = temp->p_next;
+	item = temp->p_e;
+	free(temp);
+	return item;
+}
 
 /*
  * remove item at the end of list
  */
-void* ll_pop(LList* p_list);
+void* ll_pop(LList* p_list){
+	Link* new_tail;
+	Link* old_tail;
+	void* item;
+
+	if(p_list->size <= 0){
+		printf("ERROR called pop on empty list");
+		exit(1);
+	}
+
+	if(p_list->size >= 1){			
+		new_tail = link_at(p_list->head, p_list->size - 2);
+		old_tail = new_tail->p_next;
+		new_tail->p_next = NULL;
+	} else {
+		old_tail = p_list->head;
+		p_list->head = NULL;
+	}
+	
+	item = old_tail->p_e;
+	free(old_tail);
+	return item;
+}
+
+
+// Private functions
+
+/*
+ * gets link at index
+ */
+Link* link_at(Link* head ,int index){
+	Link* target;
+	int i;
+	
+	target = head;
+	for(i = 0; i < index; i++){
+		target = target->p_next;	
+	}
+
+	return target; 
+}
+
+

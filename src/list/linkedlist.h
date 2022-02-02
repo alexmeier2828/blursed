@@ -3,9 +3,9 @@
 
 typedef void (*Action) (void*) ;
 
-typedef struct {
+typedef struct LINK {
 	void* p_e;		/* pointer to element */
-	Link* p_next;	/* pointer to next link */
+	struct LINK* p_next;	/* pointer to next link */
 }Link;
 
 typedef struct {
