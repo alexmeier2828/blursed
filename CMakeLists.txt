@@ -10,8 +10,14 @@ add_executable(MicroEdit
 
 #test
 include(test/cmocka/FetchCMocka.cmake)
-add_executable(test 
+add_executable(linkedlist_test
 	test/linkedlist_test.c
 	src/list/linkedlist.c)
-target_link_libraries(test PRIVATE cmocka-static)
+
+
+target_link_libraries(linkedlist_test PRIVATE cmocka-static)
 target_link_libraries(MicroEdit ${CURSES_LIBRARIES})
+
+#tests
+enable_testing()
+add_test(linked_list linkedlist_test)
