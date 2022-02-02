@@ -1,5 +1,7 @@
 # project specific
 MicroEdit
+build/*
+Build/*
 
 # cmake 
 CMakeLists.txt.user
