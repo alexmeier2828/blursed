@@ -3,13 +3,11 @@ project(MicroEdit C)
 
 find_package(Curses)
 
-include_directories(./src/list)
-add_executable(MicroEdit 
-	src/main.c
-	src/buffer.c)
+include(src/CMakeLists.txt)
 
 #test
 include(test/cmocka/FetchCMocka.cmake)
+include_directories(src/list)
 add_executable(linkedlist_test
 	test/linkedlist_test.c
 	src/list/linkedlist.c)
