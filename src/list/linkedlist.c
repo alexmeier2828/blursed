@@ -60,6 +60,8 @@ void ll_push(LList* p_list, void* item){
 	} else {
 		p_list->head = new_link;
 	}
+
+	p_list->size++;
 }
 
 /* 
@@ -85,6 +87,8 @@ void ll_ins(LList* p_list, int i, void* item){
 		printf("ERROR index out of bounds");
 		exit(1);
 	}
+
+	p_list->size++;
 }
 
 /*
@@ -120,6 +124,8 @@ void* ll_del(LList* p_list, int i){
 	left->p_next = temp->p_next;
 	item = temp->p_e;
 	free(temp);
+
+	p_list->size--;
 	return item;
 }
 
@@ -147,6 +153,7 @@ void* ll_pop(LList* p_list){
 	
 	item = old_tail->p_e;
 	free(old_tail);
+	p_list->size--;
 	return item;
 }
 

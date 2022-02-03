@@ -53,7 +53,7 @@ void push_ll_items_in_correct_order (void ** state){
 	ll_push(list, &item1);
 	ll_push(list, &item2);
 
-	assert_int_equal(item1, *((int*)ll_get(list, 0)));
+	assert_int_equal(item2, *((int*)ll_get(list, 0)));
 	assert_int_equal(item1, *((int*)ll_get(list, 1)));
 }
 /* These functions will be used to initialize
