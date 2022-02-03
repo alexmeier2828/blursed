@@ -56,6 +56,67 @@ void push_ll_items_in_correct_order (void ** state){
 	assert_int_equal(item1, *((int*)ll_get(list, 0)));
 	assert_int_equal(item2, *((int*)ll_get(list, 1)));
 }
+
+void ll_ins_items_in_correct_order (void ** state){
+	LList* list;
+	int item1, item2, item3;
+
+	item1 = 1;
+	item2 = 2;
+	item3 = 3;
+
+	list = new_ll();
+	ll_push(list, &item1);
+	ll_push(list, &item3);
+	ll_ins(list, 1, &item2);
+
+	
+	assert_int_equal(item1, *((int*)ll_get(list, 0)));
+	assert_int_equal(item2, *((int*)ll_get(list, 1)));
+	assert_int_equal(item3, *((int*)ll_get(list, 2)));
+}
+
+
+void ll_del_items_in_correct_order (void ** state){
+	LList* list;
+	int item1, item2, item3;
+
+	item1 = 1;
+	item2 = 2;
+	item3 = 3;
+
+	list = new_ll();
+	ll_push(list, &item1);
+	ll_push(list, &item2);
+	ll_push(list, &item3);
+		
+	assert_int_equal(item2, *((int*)ll_del(list, 1)));
+	assert_int_equal(item1, *((int*)ll_get(list, 0)));
+	assert_int_equal(item3, *((int*)ll_get(list, 1)));
+	assert_int_equal(2, list->size);
+}
+
+
+void ll_pop_items_in_correct_order (void ** state){
+	LList* list;
+	int item1, item2, item3, poped;
+
+	item1 = 1;
+	item2 = 2;
+	item3 = 3;
+
+	list = new_ll();
+	ll_push(list, &item1);
+	ll_push(list, &item2);
+	ll_push(list, &item3);
+	poped = *((int*)ll_pop(list));
+		
+	assert_int_equal(item3, poped);
+	assert_int_equal(item1, *((int*)ll_get(list, 0)));
+	assert_int_equal(item2, *((int*)ll_get(list, 1)));
+	assert_int_equal(2, list->size);
+}
+
 /* These functions will be used to initialize
    and clean resources up after each test run */
 int setup (void ** state)
@@ -77,7 +138,10 @@ int main (void)
         cmocka_unit_test (new_ll_returns_non_null),
 		cmocka_unit_test (free_ll_nulls_pointer), 
 		cmocka_unit_test (free_ll_nulls_calls_action),
-		cmocka_unit_test (push_ll_items_in_correct_order)
+		cmocka_unit_test (push_ll_items_in_correct_order),
+		cmocka_unit_test (ll_ins_items_in_correct_order),
+		cmocka_unit_test (ll_del_items_in_correct_order),
+		cmocka_unit_test (ll_pop_items_in_correct_order)
     };
 
     /* If setup and teardown functions are not
