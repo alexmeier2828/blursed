@@ -15,3 +15,9 @@ void tp_move_row(TextPager* p_pager, int d_row);
 void tp_move_col(TextPager* p_pager, int d_col);
 void tp_push(TextPager* p_pager, char);
 
+/*
+ * Gets the contents of the buffer in string form
+ * TODO this will work but it's super ineficient 
+ */
+char* tp_get_str(TextPager* p_pager);
+

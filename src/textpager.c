@@ -78,6 +78,42 @@ void tp_push(TextPager* p_pager, char c){
 	p_pager->crsr_c++;
 }
 
+char* tp_get_str(TextPager* p_pager){
+	LList* p_row;
+	int row_index;
+	int col_index; 
+	int final_size; 
+	int i;
+	char* cstring;
+
+	final_size = 0; 
+	//first find out the size so we can make a giant c string.  
+	for(row_index = 0; row_index < p_pager->p_lines->size; row_index++){
+		p_row = ll_get(p_pager->p_lines, row_index);
+		final_size += p_row->size;
+	}
+
+	//allocate memory for cstring
+	cstring = malloc(sizeof(char) * final_size + 1);
+	if(cstring == NULL){
+		printf("ERROR: TP: malloc error");
+		exit(1);
+	}
+
+	// itterate through pager
+	i = 0;
+	for(row_index = 0; row_index < p_pager->p_lines->size; row_index++){
+		p_row = ll_get(p_pager->p_lines, row_index);
+		for(col_index = 0; col_index < p_row->size; col_index++){
+			cstring[i] = *(char*)ll_get(p_row, col_index);
+			i++;
+		}
+	}
+
+	cstring[final_size] = '\0';
+	return cstring;
+}
+
 // private methods
 void free_row(void* p_char_row){
 	free_ll((LList**)&p_char_row, free_char);
@@ -86,3 +122,4 @@ void free_row(void* p_char_row){
 void free_char(void* p_char){
 	free((char*)p_char);
 }
+
