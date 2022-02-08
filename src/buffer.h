@@ -5,7 +5,6 @@
  * Header for struct to hold buffer stuff
  */
 typedef struct BUFFER {
-	SomethingToHoldStuff // Contents of buffer
 	WINDOW* p_win;		
 	char* file_str;
 } CharBuffer;
