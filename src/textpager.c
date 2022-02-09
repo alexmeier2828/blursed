@@ -92,6 +92,14 @@ void tp_push(TextPager* p_pager, char c){
 	
 	// create new line on new line
 	if(c == '\n'){
+		//add carage return
+		p_char = malloc(sizeof(char));
+		if(p_char == NULL){
+			printf("ERROR: TP: malloc error");
+			exit(1);
+		}
+		*p_char = '\r';
+		ll_push(p_row, p_char);
 		ll_ins(p_pager->p_lines, p_pager->crsr_r + 1, new_ll());
 		p_pager->crsr_c = 0;  // reset cursor
 		p_pager->crsr_r++;

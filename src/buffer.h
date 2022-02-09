@@ -5,6 +5,7 @@
  * Header for struct to hold buffer stuff
  */
 typedef struct BUFFER {
+	TextPager* p_pager;	
 	WINDOW* p_win;		
 	char* file_str;
 } CharBuffer;
