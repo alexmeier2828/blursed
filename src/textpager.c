@@ -24,6 +24,9 @@ TextPager* new_text_pager()
 	p_pager-> crsr_r = 0; 
 	p_pager-> crsr_c = 0;
 
+	//first row
+	ll_push(p_pager->p_lines, new_ll());
+
 	return p_pager;
 }
 
@@ -64,7 +67,16 @@ void tp_move_col(TextPager* p_pager, int d_col){
 void tp_push(TextPager* p_pager, char c){
 	LList* p_row; 
 	char* p_char;
+	int i, size_diff; 
+	
+	//make rows up to cursor if its out of bounds
+	size_diff = p_pager->crsr_r + 1 - p_pager->p_lines->size;
+	for(i = 0; i < size_diff; i++){
+		ll_push(p_pager->p_lines, new_ll());
+	}
+	
 
+	// allocate space for character
 	p_char = malloc(sizeof(char));
 	if(p_char == NULL){
 		printf("ERROR: TP: malloc error");
@@ -73,9 +85,17 @@ void tp_push(TextPager* p_pager, char c){
 
 	*p_char = c;
 
+	// get row, and push character to the location of cursor
 	p_row = (LList*)ll_get(p_pager->p_lines, p_pager->crsr_r);
 	ll_ins(p_row, p_pager->crsr_c, p_char);
 	p_pager->crsr_c++;
+	
+	// create new line on new line
+	if(c == '\n'){
+		ll_ins(p_pager->p_lines, p_pager->crsr_r + 1, new_ll());
+		p_pager->crsr_c = 0;  // reset cursor
+		p_pager->crsr_r++;
+	}
 }
 
 char* tp_get_str(TextPager* p_pager){
