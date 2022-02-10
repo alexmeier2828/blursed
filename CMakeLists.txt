@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.22)
-project(MicroEdit C)
+project(MicroEditProj C)
 
 find_package(Curses)
 
-include(src/CMakeLists.txt)
+add_subdirectory(src)
 
 #test
 include(test/cmocka/FetchCMocka.cmake)
