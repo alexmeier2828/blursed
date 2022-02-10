@@ -54,7 +54,7 @@ void tp_push_newline_new_row_is_made(void ** state){
 	string = tp_get_str(p_pager);
 
 	assert_int_equal(2, p_pager->p_lines->size);
-	assert_string_equal("hello\nworld", string);
+	assert_string_equal("hello\n\rworld", string);
 	
 }
 
