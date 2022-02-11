@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ncurses.h>
+#include "linkedlist.h"
+#include "textpager.h"
 #include "buffer.h"
 
 #define BUFFER_SIZE 500
@@ -36,7 +38,7 @@ int main(int argc, char** argv){
 	cbreak();	/* disables line buffering */
 
 	// TODO better way to set window size
-	p_main_window = newwin(50, 50, 0, 0);
+	p_main_window = newwin(0, 0, 0, 0);
 	
 	// editor setup
 	p_buffer = create_buffer(p_main_window, "");

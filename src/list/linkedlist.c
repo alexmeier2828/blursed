@@ -46,8 +46,10 @@ void ll_push(LList* p_list, void* item){
 	Link* new_link;
 	Link* tail; 
 
-	//TODO handle bad malloc calls
 	new_link = malloc(sizeof(Link));
+	if(new_link == NULL){
+		printf("ERROR: LinkedList: Malloc failure");
+	}
 	new_link->p_e = item;
 
 	if(p_list->head != NULL){
@@ -72,11 +74,13 @@ void ll_ins(LList* p_list, int i, void* item){
 	Link* new_link;
 	Link* insert_link;
 
-	//TODO handle bad malloc calls
 	new_link = malloc(sizeof(Link));
+	if(new_link == NULL){
+		printf("ERROR: LinkedList: Malloc failure");
+	}
 	new_link->p_e = item;
 
-	if(i < p_list->size && i > 0){
+	if(i <= p_list->size && i > 0){
 		insert_link = link_at(p_list->head, i - 1);
 		new_link->p_next = insert_link->p_next;
 		insert_link->p_next = new_link;
@@ -84,7 +88,8 @@ void ll_ins(LList* p_list, int i, void* item){
 		new_link->p_next = p_list->head;
 		p_list->head = new_link;
 	} else {
-		printf("ERROR index out of bounds");
+		printf("ERROR index out of bounds\n");
+		printf("ll->size: %d\nindex   : %d", p_list->size, i);
 		exit(1);
 	}
 

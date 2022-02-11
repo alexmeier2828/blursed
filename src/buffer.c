@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <ncurses.h>
+#include "linkedlist.h"
+#include "textpager.h"
 #include "buffer.h"
 
 // Macros
@@ -19,6 +21,7 @@ CharBuffer* create_buffer(WINDOW* p_window, char* file_str){
 	}
 
 	p_buffer->p_win = p_window; 
+	p_buffer->p_pager = new_text_pager();
 	p_buffer->file_str = file_str;
 	
 	return p_buffer;
@@ -27,6 +30,7 @@ CharBuffer* create_buffer(WINDOW* p_window, char* file_str){
 void free_buffer(CharBuffer** pBufferHandle){
 	//TODO find out how to free memory for windows 
 	delwin((*pBufferHandle)->p_win);
+	free_text_pager((&(*pBufferHandle)->p_pager));
 	free(*pBufferHandle);
 	*pBufferHandle = NULL;
 }
@@ -35,14 +39,18 @@ void free_buffer(CharBuffer** pBufferHandle){
  * puts character to buffer and advances curser
  */
 void bfr_put_char_to_curser(CharBuffer* p_buffer, char c){
-	waddch(p_buffer->p_win, c);
+	tp_push(p_buffer->p_pager, c);
+	wmove(p_buffer->p_win, 0, 0);
+	waddstr(p_buffer->p_win, tp_get_str(p_buffer->p_pager));
+	wrefresh(p_buffer->p_win);
 }
 
 /**
  * advances the curser d spaces 
  */
 int bfr_move_curser(CharBuffer* p_buffer, int x, int y){
-	wmove(p_buffer->p_win, x, y);
+	tp_move_row(p_buffer->p_pager, y);
+	tp_move_col(p_buffer->p_pager, x);
 }
 
 /**
