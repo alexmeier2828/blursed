@@ -4,4 +4,8 @@ cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -D CMAKE_C_FLAGS_DEBUG='-00 -g3' ./ -B .
 
 cd ./build
 make 
-cd ../
+
+# run tests
+cd test
+ctest --output-on-failure 
+cd ../../

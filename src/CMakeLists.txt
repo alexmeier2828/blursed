@@ -1,6 +1,10 @@
-include_directories(./list)
+add_subdirectory(list)
 add_executable(MicroEdit 
-	src/main.c
-	src/buffer.c
-	src/textpager.c
-	src/list/linkedlist.c)
+	main.c
+	buffer.c
+	textpager.c)
+
+include_directories(${CMAKE_SOURCE_DIR}/src/list)
+target_link_libraries(MicroEdit 
+	${CURSES_LIBRARIES}
+	list)
