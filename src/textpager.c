@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <ncurses.h>
 #include "linkedlist.h"
 #include "textpager.h"
 
@@ -47,8 +48,16 @@ void free_text_pager(TextPager** pp_pager){
  * move row spaces up and down
  */
 void tp_move_row(TextPager* p_pager, int d_row){
+	LList* new_row;
+
 	if(IN_BOUNDS(p_pager->crsr_r + d_row, p_pager->p_lines->size)){
 		p_pager->crsr_r += d_row;			
+		new_row = ll_get(p_pager->p_lines, p_pager->crsr_r);
+
+		//shift the curser left if the line is shorter then the previous one
+		if(p_pager->crsr_c >= new_row->size){
+			p_pager->crsr_c = new_row->size - 2;
+		}
 	}
 }
 
@@ -140,6 +149,30 @@ char* tp_get_str(TextPager* p_pager){
 
 	cstring[final_size] = '\0';
 	return cstring;
+}
+
+// TODO this is kindof annoying that this now depends on curses.  I should make this just take the y cordinate
+void tp_get_curses_cursor(TextPager* p_pager, WINDOW* p_window, int* x, int* y){
+	int adjusted_cursor_x, adjusted_cursor_y;
+	int win_size_x, win_size_y;
+	int	i; 
+	LList* row;
+	
+	getmaxyx(p_window, win_size_y, win_size_x);
+
+	// this is the curser value if none of the lines wrap
+	adjusted_cursor_y = p_pager->crsr_r;
+	for(i = 0; i <= p_pager->crsr_r; i++){
+		row = (LList*)ll_get(p_pager->p_lines, i);
+		if(row->size > win_size_x){
+			adjusted_cursor_y += row->size / win_size_x;
+		}
+	}
+
+	adjusted_cursor_x = p_pager->crsr_c % win_size_x;
+	
+	*x = adjusted_cursor_x;
+	*y = adjusted_cursor_y;
 }
 
 // private methods

@@ -36,6 +36,7 @@ int main(int argc, char** argv){
 	// Curses setup
 	initscr();	/* Start curses mode */
 	cbreak();	/* disables line buffering */
+	noecho();   /* disables echoing keypresses */
 
 	// TODO better way to set window size
 	p_main_window = newwin(0, 0, 0, 0);

@@ -39,9 +39,16 @@ void free_buffer(CharBuffer** pBufferHandle){
  * puts character to buffer and advances curser
  */
 void bfr_put_char_to_curser(CharBuffer* p_buffer, char c){
+	int winx, winy;
+
 	tp_push(p_buffer->p_pager, c);
 	wmove(p_buffer->p_win, 0, 0);
 	waddstr(p_buffer->p_win, tp_get_str(p_buffer->p_pager));
+	
+	//get adjusted cursor
+	tp_get_curses_cursor(p_buffer->p_pager, p_buffer->p_win, &winx, &winy);
+	wmove(p_buffer->p_win, winy, winx);
+
 	wrefresh(p_buffer->p_win);
 }
 
@@ -49,8 +56,16 @@ void bfr_put_char_to_curser(CharBuffer* p_buffer, char c){
  * advances the curser d spaces 
  */
 int bfr_move_curser(CharBuffer* p_buffer, int x, int y){
+	int winx, winy;
+	
+	// move text pager curser 
 	tp_move_row(p_buffer->p_pager, y);
 	tp_move_col(p_buffer->p_pager, x);
+
+	//get adjusted cursor
+	tp_get_curses_cursor(p_buffer->p_pager, p_buffer->p_win, &winx, &winy);
+	wmove(p_buffer->p_win, winy, winx);
+	wrefresh(p_buffer->p_win);
 }
 
 /**

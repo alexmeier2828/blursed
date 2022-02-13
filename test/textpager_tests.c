@@ -1,6 +1,7 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <setjmp.h>
+#include <ncurses.h>
 #include <cmocka.h>
 #include "linkedlist.h"
 #include "textpager.h"
