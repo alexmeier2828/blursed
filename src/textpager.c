@@ -75,8 +75,10 @@ void tp_move_col(TextPager* p_pager, int d_col){
 
 void tp_push(TextPager* p_pager, char c){
 	LList* p_row; 
-	char* p_char;
+	char* p_char_handle;
 	int i, size_diff; 
+	LList* new_row;
+
 	
 	//make rows up to cursor if its out of bounds
 	size_diff = p_pager->crsr_r + 1 - p_pager->p_lines->size;
@@ -86,30 +88,39 @@ void tp_push(TextPager* p_pager, char c){
 	
 
 	// allocate space for character
-	p_char = malloc(sizeof(char));
-	if(p_char == NULL){
+	p_char_handle = malloc(sizeof(char));
+	if(p_char_handle == NULL){
 		printf("ERROR: TP: malloc error");
 		exit(1);
 	}
 
-	*p_char = c;
+	*p_char_handle = c;
 
 	// get row, and push character to the location of cursor
 	p_row = (LList*)ll_get(p_pager->p_lines, p_pager->crsr_r);
-	ll_ins(p_row, p_pager->crsr_c, p_char);
+	ll_ins(p_row, p_pager->crsr_c, p_char_handle);
 	p_pager->crsr_c++;
 	
 	// create new line on new line
 	if(c == '\n'){
 		//add carage return
-		p_char = malloc(sizeof(char));
-		if(p_char == NULL){
+		p_char_handle = malloc(sizeof(char));
+		if(p_char_handle == NULL){
 			printf("ERROR: TP: malloc error");
 			exit(1);
 		}
-		*p_char = '\r';
-		ll_push(p_row, p_char);
-		ll_ins(p_pager->p_lines, p_pager->crsr_r + 1, new_ll());
+		//*p_char_handle = '\r';
+		//ll_ins(p_row, p_pager->crsr_c, p_char_handle);
+		
+		//copy end of line to new row
+		new_row = new_ll();
+		size_diff = p_row->size - p_pager->crsr_c;
+		for(i = 0; i < size_diff; i++){
+			p_char_handle = (char*)ll_pop(p_row);
+			ll_ins(new_row, 0, p_char_handle);
+		}
+
+		ll_ins(p_pager->p_lines, p_pager->crsr_r + 1, new_row);
 		p_pager->crsr_c = 0;  // reset cursor
 		p_pager->crsr_r++;
 	}

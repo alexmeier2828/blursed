@@ -55,8 +55,40 @@ void tp_push_newline_new_row_is_made(void ** state){
 	string = tp_get_str(p_pager);
 
 	assert_int_equal(2, p_pager->p_lines->size);
-	assert_string_equal("hello\n\rworld", string);
+	assert_string_equal("hello\nworld", string);
 	
+}
+
+void tp_push_multiple_newlines_end_of_string_carries(void **state){
+	TextPager* pager; 
+	char* string;
+
+	pager = new_text_pager();
+
+	tp_push(pager, 'h');
+	tp_push(pager, 'e');
+	tp_push(pager, 'l');
+	tp_push(pager, 'l');
+	tp_push(pager, 'o');
+	tp_push(pager, ' ');
+	tp_push(pager, 'w');
+	tp_push(pager, 'o');
+	tp_push(pager, 'r');
+	tp_push(pager, 'l');
+	tp_push(pager, 'd');
+	
+	// now move cursor left to w
+	tp_move_col(pager, -5);
+
+	//push 3 newlines
+	tp_push(pager, '\n');
+	tp_push(pager, '\n');
+	tp_push(pager, '\n');
+
+	string = tp_get_str(pager);
+
+	assert_int_equal(4, pager->p_lines->size);
+	assert_string_equal("hello \n\n\nworld", string);
 }
 
 /* These functions will be used to initialize
@@ -79,7 +111,8 @@ int main (void)
 		cmocka_unit_test (new_tp_returns_non_null),
 		cmocka_unit_test (free_tp_nulls_ptr),
 		cmocka_unit_test (tp_push_and_get_str),
-		cmocka_unit_test (tp_push_newline_new_row_is_made)
+		cmocka_unit_test (tp_push_newline_new_row_is_made),
+		cmocka_unit_test (tp_push_multiple_newlines_end_of_string_carries)
     };
 
     /* If setup and teardown functions are not
