@@ -49,13 +49,18 @@ void free_text_pager(TextPager** pp_pager){
 void tp_move_row(TextPager* p_pager, int d_row){
 	LList* new_row;
 
+	// no need to do anything if we are already on the right row
+	if(d_row == 0){
+		return;
+	}
+
 	if(IN_BOUNDS(p_pager->crsr_r + d_row, p_pager->p_lines->size)){
 		p_pager->crsr_r += d_row;			
 		new_row = ll_get(p_pager->p_lines, p_pager->crsr_r);
 
 		//shift the curser left if the line is shorter then the previous one
-		if(p_pager->crsr_c >= new_row->size){
-			p_pager->crsr_c = new_row->size - 2;
+		if(p_pager->crsr_c > new_row->size){
+			p_pager->crsr_c = new_row->size - 1;
 		}
 	}
 }
@@ -65,6 +70,11 @@ void tp_move_row(TextPager* p_pager, int d_row){
  */
 void tp_move_col(TextPager* p_pager, int d_col){
 	LList* p_row; 
+	
+	// no need to do anything if we are already on the right col
+	if(d_col == 0){
+		return;
+	}
 
 	p_row = (LList*)ll_get(p_pager->p_lines, p_pager->crsr_r);
 	if(IN_BOUNDS(p_pager->crsr_c + d_col, p_row->size)){
