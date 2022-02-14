@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <ncurses.h>
 #include "linkedlist.h"
 #include "textpager.h"
 
@@ -162,14 +161,11 @@ char* tp_get_str(TextPager* p_pager){
 	return cstring;
 }
 
-// TODO this is kindof annoying that this now depends on curses.  I should make this just take the y cordinate
-void tp_get_curses_cursor(TextPager* p_pager, WINDOW* p_window, int* x, int* y){
+void tp_get_curses_cursor(TextPager* p_pager, int win_size_x, int win_size_y, int* x, int* y){
 	int adjusted_cursor_x, adjusted_cursor_y;
-	int win_size_x, win_size_y;
 	int	i; 
 	LList* row;
 	
-	getmaxyx(p_window, win_size_y, win_size_x);
 
 	// this is the curser value if none of the lines wrap
 	adjusted_cursor_y = p_pager->crsr_r;

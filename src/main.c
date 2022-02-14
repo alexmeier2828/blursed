@@ -74,7 +74,6 @@ int main(int argc, char** argv){
 	return 0; 
 }
 
-
 void normal_mode(EditorState* p_state, int input_char){
 	switch(input_char){
 		case ':':

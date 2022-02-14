@@ -41,6 +41,6 @@ char* tp_get_str(TextPager* p_pager);
  * convert cursor cordinates to a curses window that might display this text pager.
  * the resulting x/y conversion is placed in the parameters x and y. 
  */
-void tp_get_curses_cursor(TextPager* p_pager, WINDOW* p_window, int* x, int* y);
+void tp_get_curses_cursor(TextPager* p_pager, int win_size_x, int win_size_y, int* x, int* y);
 
 #endif
