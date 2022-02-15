@@ -19,16 +19,16 @@ typedef enum {
 // TODO should have a seperate buffer instance for command mode
 typedef struct {
 	EditorModeEnum mode;
+	CharBuffer* p_buffer;
 	int running; 
 } EditorState;
 
 // function definitions
 void normal_mode(EditorState* p_state, int input_char);
-void insert_mode(EditorState* p_state, int input_char, CharBuffer* p_buffer);
+void insert_mode(EditorState* p_state, int input_char);
 void command_mode(EditorState* p_state, int input_char);
 
 int main(int argc, char** argv){
-	CharBuffer* p_buffer;
 	int input_char; 
 	EditorState editor_state;
 	WINDOW* p_main_window;
@@ -36,13 +36,14 @@ int main(int argc, char** argv){
 	// Curses setup
 	initscr();	/* Start curses mode */
 	cbreak();	/* disables line buffering */
+	noecho();   /* disables echoing keypresses */
 
 	// TODO better way to set window size
 	p_main_window = newwin(0, 0, 0, 0);
 	
 	// editor setup
-	p_buffer = create_buffer(p_main_window, "");
-	bfr_refresh(p_buffer);
+	editor_state.p_buffer = create_buffer(p_main_window, "");
+	bfr_refresh(editor_state.p_buffer);
 
 	editor_state.mode = NORMAL;
 	editor_state.running = TRUE;
@@ -60,7 +61,7 @@ int main(int argc, char** argv){
 				command_mode(&editor_state, input_char);
 				break;
 			case INSERT:
-				insert_mode(&editor_state, input_char, p_buffer);
+				insert_mode(&editor_state, input_char);
 				break;
 			default:
 				printf("ERROR: encountered non implemented state");
@@ -73,7 +74,6 @@ int main(int argc, char** argv){
 	return 0; 
 }
 
-
 void normal_mode(EditorState* p_state, int input_char){
 	switch(input_char){
 		case ':':
@@ -82,11 +82,28 @@ void normal_mode(EditorState* p_state, int input_char){
 		case 'i':
 			p_state->mode = INSERT;
 			break;
-		// TODO handle movment here
+		//TODO for movment keys, it needs to also move the curses cursor
+		case 'h':
+			// left
+			bfr_move_curser(p_state->p_buffer, -1, 0);
+			break;
+		case 'j':
+			//move down
+			bfr_move_curser(p_state->p_buffer, 0, 1);
+			break;
+		case 'k':
+			//move up
+			bfr_move_curser(p_state->p_buffer, 0, -1);
+			break;
+		case 'l':
+			//move right
+			bfr_move_curser(p_state->p_buffer, 1, 0);
+			break;
+
 	}
 }
 
-void insert_mode(EditorState* p_state, int input_char, CharBuffer* p_buffer){
+void insert_mode(EditorState* p_state, int input_char){
 	switch(input_char){
 		case KEY_BACKSPACE:
 			return;
@@ -95,9 +112,7 @@ void insert_mode(EditorState* p_state, int input_char, CharBuffer* p_buffer){
 			return; 
 	}
 
-	// TODO Move all handling of printing to the ncurses window to 
-	// buffer implementation file (or a new wrapper for buffer maybe)
-	bfr_put_char_to_curser(p_buffer, (char)input_char);
+	bfr_put_char_to_curser(p_state->p_buffer, (char)input_char);
 }
 
 void command_mode(EditorState* p_state, int input_char){

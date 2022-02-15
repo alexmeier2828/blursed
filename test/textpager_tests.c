@@ -54,8 +54,73 @@ void tp_push_newline_new_row_is_made(void ** state){
 	string = tp_get_str(p_pager);
 
 	assert_int_equal(2, p_pager->p_lines->size);
-	assert_string_equal("hello\n\rworld", string);
+	assert_string_equal("hello\nworld", string);
 	
+}
+
+void tp_push_multiple_newlines_end_of_string_carries(void **state){
+	TextPager* pager; 
+	char* string;
+
+	pager = new_text_pager();
+
+	tp_push(pager, 'h');
+	tp_push(pager, 'e');
+	tp_push(pager, 'l');
+	tp_push(pager, 'l');
+	tp_push(pager, 'o');
+	tp_push(pager, ' ');
+	tp_push(pager, 'w');
+	tp_push(pager, 'o');
+	tp_push(pager, 'r');
+	tp_push(pager, 'l');
+	tp_push(pager, 'd');
+	
+	// now move cursor left to w
+	tp_move_col(pager, -5);
+
+	//push 3 newlines
+	tp_push(pager, '\n');
+	tp_push(pager, '\n');
+	tp_push(pager, '\n');
+
+	string = tp_get_str(pager);
+
+	assert_int_equal(4, pager->p_lines->size);
+	assert_string_equal("hello \n\n\nworld", string);
+}
+
+void tp_mov_col__move_left_on_first_line__cursor_moves_left(void **state){
+	TextPager* pager;
+	int winx, winy;
+	char* string;
+
+	pager = new_text_pager();
+
+	tp_push(pager, 'a');
+	tp_push(pager, 'b');
+	tp_push(pager, 'c');
+	tp_push(pager, 'd');
+	tp_push(pager, 'e');
+	
+	//check cursor position
+	assert_int_equal(5, pager->crsr_c);
+	
+	//move cursor left 1
+	tp_move_col(pager, -1);
+
+
+	tp_push(pager, 'f');
+	string = tp_get_str(pager);
+
+	//get reported window cordinates
+	tp_get_curses_cursor(pager, 50, 50, &winx, &winy);
+
+	//check cursor again
+	assert_int_equal(5, pager->crsr_c);
+	assert_int_equal(5, winx);
+	assert_int_equal(0, winy);
+	assert_string_equal("abcdfe", string);
 }
 
 /* These functions will be used to initialize
@@ -78,7 +143,9 @@ int main (void)
 		cmocka_unit_test (new_tp_returns_non_null),
 		cmocka_unit_test (free_tp_nulls_ptr),
 		cmocka_unit_test (tp_push_and_get_str),
-		cmocka_unit_test (tp_push_newline_new_row_is_made)
+		cmocka_unit_test (tp_push_newline_new_row_is_made),
+		cmocka_unit_test (tp_push_multiple_newlines_end_of_string_carries),
+		cmocka_unit_test (tp_mov_col__move_left_on_first_line__cursor_moves_left)
     };
 
     /* If setup and teardown functions are not

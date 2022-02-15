@@ -47,8 +47,21 @@ void free_text_pager(TextPager** pp_pager){
  * move row spaces up and down
  */
 void tp_move_row(TextPager* p_pager, int d_row){
+	LList* new_row;
+
+	// no need to do anything if we are already on the right row
+	if(d_row == 0){
+		return;
+	}
+
 	if(IN_BOUNDS(p_pager->crsr_r + d_row, p_pager->p_lines->size)){
 		p_pager->crsr_r += d_row;			
+		new_row = ll_get(p_pager->p_lines, p_pager->crsr_r);
+
+		//shift the curser left if the line is shorter then the previous one
+		if(p_pager->crsr_c > new_row->size){
+			p_pager->crsr_c = new_row->size - 1;
+		}
 	}
 }
 
@@ -57,6 +70,11 @@ void tp_move_row(TextPager* p_pager, int d_row){
  */
 void tp_move_col(TextPager* p_pager, int d_col){
 	LList* p_row; 
+	
+	// no need to do anything if we are already on the right col
+	if(d_col == 0){
+		return;
+	}
 
 	p_row = (LList*)ll_get(p_pager->p_lines, p_pager->crsr_r);
 	if(IN_BOUNDS(p_pager->crsr_c + d_col, p_row->size)){
@@ -66,8 +84,10 @@ void tp_move_col(TextPager* p_pager, int d_col){
 
 void tp_push(TextPager* p_pager, char c){
 	LList* p_row; 
-	char* p_char;
+	char* p_char_handle;
 	int i, size_diff; 
+	LList* new_row;
+
 	
 	//make rows up to cursor if its out of bounds
 	size_diff = p_pager->crsr_r + 1 - p_pager->p_lines->size;
@@ -77,30 +97,39 @@ void tp_push(TextPager* p_pager, char c){
 	
 
 	// allocate space for character
-	p_char = malloc(sizeof(char));
-	if(p_char == NULL){
+	p_char_handle = malloc(sizeof(char));
+	if(p_char_handle == NULL){
 		printf("ERROR: TP: malloc error");
 		exit(1);
 	}
 
-	*p_char = c;
+	*p_char_handle = c;
 
 	// get row, and push character to the location of cursor
 	p_row = (LList*)ll_get(p_pager->p_lines, p_pager->crsr_r);
-	ll_ins(p_row, p_pager->crsr_c, p_char);
+	ll_ins(p_row, p_pager->crsr_c, p_char_handle);
 	p_pager->crsr_c++;
 	
 	// create new line on new line
 	if(c == '\n'){
 		//add carage return
-		p_char = malloc(sizeof(char));
-		if(p_char == NULL){
+		p_char_handle = malloc(sizeof(char));
+		if(p_char_handle == NULL){
 			printf("ERROR: TP: malloc error");
 			exit(1);
 		}
-		*p_char = '\r';
-		ll_push(p_row, p_char);
-		ll_ins(p_pager->p_lines, p_pager->crsr_r + 1, new_ll());
+		//*p_char_handle = '\r';
+		//ll_ins(p_row, p_pager->crsr_c, p_char_handle);
+		
+		//copy end of line to new row
+		new_row = new_ll();
+		size_diff = p_row->size - p_pager->crsr_c;
+		for(i = 0; i < size_diff; i++){
+			p_char_handle = (char*)ll_pop(p_row);
+			ll_ins(new_row, 0, p_char_handle);
+		}
+
+		ll_ins(p_pager->p_lines, p_pager->crsr_r + 1, new_row);
 		p_pager->crsr_c = 0;  // reset cursor
 		p_pager->crsr_r++;
 	}
@@ -140,6 +169,27 @@ char* tp_get_str(TextPager* p_pager){
 
 	cstring[final_size] = '\0';
 	return cstring;
+}
+
+void tp_get_curses_cursor(TextPager* p_pager, int win_size_x, int win_size_y, int* x, int* y){
+	int adjusted_cursor_x, adjusted_cursor_y;
+	int	i; 
+	LList* row;
+	
+
+	// this is the curser value if none of the lines wrap
+	adjusted_cursor_y = p_pager->crsr_r;
+	for(i = 0; i <= p_pager->crsr_r; i++){
+		row = (LList*)ll_get(p_pager->p_lines, i);
+		if(row->size > win_size_x){
+			adjusted_cursor_y += row->size / win_size_x;
+		}
+	}
+
+	adjusted_cursor_x = p_pager->crsr_c % win_size_x;
+	
+	*x = adjusted_cursor_x;
+	*y = adjusted_cursor_y;
 }
 
 // private methods
