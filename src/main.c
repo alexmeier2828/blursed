@@ -32,6 +32,19 @@ int main(int argc, char** argv){
 	int input_char; 
 	EditorState editor_state;
 	WINDOW* p_main_window;
+	bool should_open_file;
+
+	// Command Line Arguments 
+	if(argc > 2){
+		printf("Usage: MicroEdit {file}");
+		exit(1);
+	}else if(argc == 2){
+		//TODO configuration
+		should_open_file = 1;
+	}else {
+		should_open_file = 0;
+	}
+	
 
 	// Curses setup
 	initscr();	/* Start curses mode */
@@ -42,7 +55,10 @@ int main(int argc, char** argv){
 	p_main_window = newwin(0, 0, 0, 0);
 	
 	// editor setup
-	editor_state.p_buffer = create_buffer(p_main_window, "");
+	editor_state.p_buffer = create_buffer(p_main_window);
+	if(should_open_file){
+		bfr_load_file(editor_state.p_buffer, argv[1]);
+	}
 	bfr_refresh(editor_state.p_buffer);
 
 	editor_state.mode = NORMAL;
