@@ -45,7 +45,6 @@ int main(int argc, char** argv){
 		should_open_file = 0;
 	}
 	
-
 	// Curses setup
 	initscr();	/* Start curses mode */
 	cbreak();	/* disables line buffering */
@@ -67,6 +66,7 @@ int main(int argc, char** argv){
 	// get input from keyboard in a loop
 	while(editor_state.running){
 		input_char = getch();
+		bfr_refresh(editor_state.p_buffer);
 
 		//mode switch
 		switch(editor_state.mode){
@@ -115,13 +115,13 @@ void normal_mode(EditorState* p_state, int input_char){
 			//move right
 			bfr_move_curser(p_state->p_buffer, 1, 0);
 			break;
-
 	}
 }
 
 void insert_mode(EditorState* p_state, int input_char){
 	switch(input_char){
 		case KEY_BACKSPACE:
+			// TODO backspace key
 			return;
 		case KEY_ESCAPE:
 			p_state->mode = NORMAL;
@@ -129,6 +129,7 @@ void insert_mode(EditorState* p_state, int input_char){
 	}
 
 	bfr_put_char_to_curser(p_state->p_buffer, (char)input_char);
+	bfr_refresh(p_state->p_buffer);
 }
 
 void command_mode(EditorState* p_state, int input_char){
