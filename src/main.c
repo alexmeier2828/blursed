@@ -5,12 +5,12 @@
 #include "textpager.h"
 #include "buffer.h"
 #include "editorState.h"
+#include "editorModes.h"
 
 #define BUFFER_SIZE 500
 #define KEY_ESCAPE 27
 
 // function definitions
-void normal_mode(EditorState* p_state, int input_char);
 void insert_mode(EditorState* p_state, int input_char);
 void command_mode(EditorState* p_state, int input_char);
 
