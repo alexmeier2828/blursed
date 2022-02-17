@@ -65,7 +65,7 @@ int main(int argc, char** argv){
 
 	// get input from keyboard in a loop
 	while(editor_state.running){
-		input_char = getch();
+		input_char = wgetch(p_main_window);
 		bfr_refresh(editor_state.p_buffer);
 
 		//mode switch

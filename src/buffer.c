@@ -129,7 +129,10 @@ void bfr_load_file(CharBuffer* p_buffer, char* file_str){
 	while((read_char = fgetc(file)) != EOF){
 		tp_push(p_buffer->p_pager, read_char);
 	}
-
+	
+	tp_move_col(p_buffer->p_pager, - p_buffer->p_pager->crsr_c);
+	tp_move_row(p_buffer->p_pager, - p_buffer->p_pager->crsr_r);
+	wmove(p_buffer->p_win, 0, 0);
 	//close file stream
 	fclose(file);
 }
