@@ -4,33 +4,19 @@
 #include "linkedlist.h"
 #include "textpager.h"
 #include "buffer.h"
+#include "editorState.h"
+#include "editorModes.h"
 
 #define BUFFER_SIZE 500
 #define KEY_ESCAPE 27
 
-typedef enum {
-	NORMAL,
-	COMMAND,
-	INSERT
-} EditorModeEnum;
-
-// TODO move this into its own file so it can live on the heap
-// TODO buffer should be part of editor_state
-// TODO should have a seperate buffer instance for command mode
-typedef struct {
-	EditorModeEnum mode;
-	CharBuffer* p_buffer;
-	int running; 
-} EditorState;
-
 // function definitions
-void normal_mode(EditorState* p_state, int input_char);
 void insert_mode(EditorState* p_state, int input_char);
 void command_mode(EditorState* p_state, int input_char);
 
 int main(int argc, char** argv){
 	int input_char; 
-	EditorState editor_state;
+	EditorState* p_editor_state;
 	WINDOW* p_main_window;
 	bool should_open_file;
 
@@ -54,30 +40,31 @@ int main(int argc, char** argv){
 	p_main_window = newwin(0, 0, 0, 0);
 	
 	// editor setup
-	editor_state.p_buffer = create_buffer(p_main_window);
+	p_editor_state = new_editor_state();
+	p_editor_state->currentBuffer = create_buffer(p_main_window);
 	if(should_open_file){
-		bfr_load_file(editor_state.p_buffer, argv[1]);
+		bfr_load_file(p_editor_state->currentBuffer, argv[1]);
 	}
-	bfr_refresh(editor_state.p_buffer);
+	bfr_refresh(p_editor_state->currentBuffer);
 
-	editor_state.mode = NORMAL;
-	editor_state.running = TRUE;
+	p_editor_state->mode = NORMAL;
+	p_editor_state->running = TRUE;
 
 	// get input from keyboard in a loop
-	while(editor_state.running){
+	while(p_editor_state->running){
 		input_char = wgetch(p_main_window);
-		bfr_refresh(editor_state.p_buffer);
+		bfr_refresh(p_editor_state->currentBuffer);
 
 		//mode switch
-		switch(editor_state.mode){
+		switch(p_editor_state->mode){
 			case NORMAL:
-				normal_mode(&editor_state, input_char);
+				normal_mode(p_editor_state, input_char);
 				break;
 			case COMMAND:
-				command_mode(&editor_state, input_char);
+				command_mode(p_editor_state, input_char);
 				break;
 			case INSERT:
-				insert_mode(&editor_state, input_char);
+				insert_mode(p_editor_state, input_char);
 				break;
 			default:
 				printf("ERROR: encountered non implemented state");
@@ -101,19 +88,19 @@ void normal_mode(EditorState* p_state, int input_char){
 		//TODO for movment keys, it needs to also move the curses cursor
 		case 'h':
 			// left
-			bfr_move_curser(p_state->p_buffer, -1, 0);
+			bfr_move_curser(p_state->currentBuffer, -1, 0);
 			break;
 		case 'j':
 			//move down
-			bfr_move_curser(p_state->p_buffer, 0, 1);
+			bfr_move_curser(p_state->currentBuffer, 0, 1);
 			break;
 		case 'k':
 			//move up
-			bfr_move_curser(p_state->p_buffer, 0, -1);
+			bfr_move_curser(p_state->currentBuffer, 0, -1);
 			break;
 		case 'l':
 			//move right
-			bfr_move_curser(p_state->p_buffer, 1, 0);
+			bfr_move_curser(p_state->currentBuffer, 1, 0);
 			break;
 	}
 }
@@ -128,8 +115,8 @@ void insert_mode(EditorState* p_state, int input_char){
 			return; 
 	}
 
-	bfr_put_char_to_curser(p_state->p_buffer, (char)input_char);
-	bfr_refresh(p_state->p_buffer);
+	bfr_put_char_to_curser(p_state->currentBuffer, (char)input_char);
+	bfr_refresh(p_state->currentBuffer);
 }
 
 void command_mode(EditorState* p_state, int input_char){
