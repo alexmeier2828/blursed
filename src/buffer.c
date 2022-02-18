@@ -10,7 +10,7 @@
 	b->curser + d >= 0)
 
 // Header Implementation
-CharBuffer* create_buffer(WINDOW* p_window, char* file_str){
+CharBuffer* create_buffer(WINDOW* p_window){
 	CharBuffer* p_buffer;
 
 	p_buffer = malloc(sizeof(CharBuffer));
@@ -22,7 +22,6 @@ CharBuffer* create_buffer(WINDOW* p_window, char* file_str){
 
 	p_buffer->p_win = p_window; 
 	p_buffer->p_pager = new_text_pager();
-	p_buffer->file_str = file_str;
 	
 	return p_buffer;
 }
@@ -41,19 +40,24 @@ void free_buffer(CharBuffer** pBufferHandle){
 void bfr_put_char_to_curser(CharBuffer* p_buffer, char c){
 	int winx, winy;
 	int win_size_x, win_size_y;
+	char* string;
 
 	//get window size
 	getmaxyx(p_buffer->p_win, win_size_y, win_size_x);
 
 	tp_push(p_buffer->p_pager, c);
 	wmove(p_buffer->p_win, 0, 0);
-	waddstr(p_buffer->p_win, tp_get_str(p_buffer->p_pager));
+
+	string =  tp_get_str(p_buffer->p_pager);
+
+	// TODO I don't think its nessecary to add string in here.  it can be the callers responsibility to refresh the window
+	waddstr(p_buffer->p_win, string);
 	
 	//get adjusted cursor
 	tp_get_curses_cursor(p_buffer->p_pager, win_size_x, win_size_y, &winx, &winy);
 	wmove(p_buffer->p_win, winy, winx);
 
-	wrefresh(p_buffer->p_win);
+	free(string);
 }
 
 /**
@@ -73,7 +77,6 @@ int bfr_move_curser(CharBuffer* p_buffer, int x, int y){
 	//get adjusted cursor
 	tp_get_curses_cursor(p_buffer->p_pager, win_size_x, win_size_y, &winx, &winy);
 	wmove(p_buffer->p_win, winy, winx);
-	wrefresh(p_buffer->p_win);
 }
 
 /**
@@ -87,14 +90,54 @@ void bfr_clear(CharBuffer* p_buffer){
  * print buffer contents to curses window
  */
 void bfr_refresh(CharBuffer* p_buffer){
+	char* string;
+	int winx, winy;
+	int win_size_x, win_size_y;
+
+	//get window size
+	getmaxyx(p_buffer->p_win, win_size_y, win_size_x);
+	
+	string = tp_get_str(p_buffer->p_pager);
+	wmove(p_buffer->p_win, 0, 0);
+	waddstr(p_buffer->p_win, string);
+
+	//get adjusted cursor
+	tp_get_curses_cursor(p_buffer->p_pager, win_size_x, win_size_y, &winx, &winy);
+	wmove(p_buffer->p_win, winy, winx);
+	
+	// Refresh window
 	wrefresh(p_buffer->p_win); 
+
+	free(string);
+}
+
+void bfr_load_file(CharBuffer* p_buffer, char* file_str){
+	FILE* file;
+	char read_char;
+	int i;
+	
+	//open file for reading
+	file = fopen(file_str, "r");
+	if(file == NULL){
+		printf("ERROR: BUFFER: Failed to open file: %s", file_str);
+		endwin();
+		exit(1);
+	}
+
+	//read from file character by character
+	// TODO need to check if this is any less efficient than using scanf or reading line by line
+	while((read_char = fgetc(file)) != EOF){
+		tp_push(p_buffer->p_pager, read_char);
+	}
+	
+	tp_move_col(p_buffer->p_pager, - p_buffer->p_pager->crsr_c);
+	tp_move_row(p_buffer->p_pager, - p_buffer->p_pager->crsr_r);
+	wmove(p_buffer->p_win, 0, 0);
+	//close file stream
+	fclose(file);
 }
 
 void bfr_save_to_file(CharBuffer* p_buffer){
-	FILE* file;
-	int i;
-	
-	// TODO sread from file. not implemented yet
-	//file = fopen(p_buffer->file_str);
-	
+	printf("NotImplemented bfr_save_to_file");
+	exit(1);
 }

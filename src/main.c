@@ -32,7 +32,19 @@ int main(int argc, char** argv){
 	int input_char; 
 	EditorState editor_state;
 	WINDOW* p_main_window;
+	bool should_open_file;
 
+	// Command Line Arguments 
+	if(argc > 2){
+		printf("Usage: MicroEdit {file}");
+		exit(1);
+	}else if(argc == 2){
+		//TODO configuration
+		should_open_file = 1;
+	}else {
+		should_open_file = 0;
+	}
+	
 	// Curses setup
 	initscr();	/* Start curses mode */
 	cbreak();	/* disables line buffering */
@@ -42,7 +54,10 @@ int main(int argc, char** argv){
 	p_main_window = newwin(0, 0, 0, 0);
 	
 	// editor setup
-	editor_state.p_buffer = create_buffer(p_main_window, "");
+	editor_state.p_buffer = create_buffer(p_main_window);
+	if(should_open_file){
+		bfr_load_file(editor_state.p_buffer, argv[1]);
+	}
 	bfr_refresh(editor_state.p_buffer);
 
 	editor_state.mode = NORMAL;
@@ -50,7 +65,8 @@ int main(int argc, char** argv){
 
 	// get input from keyboard in a loop
 	while(editor_state.running){
-		input_char = getch();
+		input_char = wgetch(p_main_window);
+		bfr_refresh(editor_state.p_buffer);
 
 		//mode switch
 		switch(editor_state.mode){
@@ -99,13 +115,13 @@ void normal_mode(EditorState* p_state, int input_char){
 			//move right
 			bfr_move_curser(p_state->p_buffer, 1, 0);
 			break;
-
 	}
 }
 
 void insert_mode(EditorState* p_state, int input_char){
 	switch(input_char){
 		case KEY_BACKSPACE:
+			// TODO backspace key
 			return;
 		case KEY_ESCAPE:
 			p_state->mode = NORMAL;
@@ -113,6 +129,7 @@ void insert_mode(EditorState* p_state, int input_char){
 	}
 
 	bfr_put_char_to_curser(p_state->p_buffer, (char)input_char);
+	bfr_refresh(p_state->p_buffer);
 }
 
 void command_mode(EditorState* p_state, int input_char){

@@ -7,13 +7,12 @@
 typedef struct BUFFER {
 	TextPager* p_pager;	
 	WINDOW* p_win;		
-	char* file_str;
 } CharBuffer;
 
 /**
  * allocates space for a new charBuffer.  
  */
-CharBuffer* create_buffer(WINDOW* p_window, char* file_str);
+CharBuffer* create_buffer(WINDOW* p_window);
 
 /**
  * Frees alocated memory for charBuffer;
@@ -46,4 +45,8 @@ void bfr_refresh(CharBuffer* p_buffer);
  */
 void bfr_save_to_file(CharBuffer* p_buffer);
 
+/**
+ * load file into buffer
+ */
+void bfr_load_file(CharBuffer* p_buffer, char* file_str);
 #endif
