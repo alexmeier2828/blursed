@@ -138,10 +138,26 @@ void tp_push(TextPager* p_pager, char c){
 void tp_delete(TextPager* p_pager){
 	LList* p_row;
 	char* p_discard;
+	
+	// if col is at 0 and we're not on the first line 
+	if(p_pager->crsr_c < 1){
+		if(p_pager->crsr_r == 0){
+			return; /*do nothing if this is the first character*/
+		}
+		p_row = (LList*)ll_del(p_pager->p_lines, p_pager->crsr_r);
+		free_ll(&p_row, free_char);
+		
+		p_pager->crsr_r--;
 
-	// Get row
-	p_row = (LList*)ll_get(p_pager->p_lines, p_pager->crsr_r);
-
+		// Get row
+		p_row = (LList*)ll_get(p_pager->p_lines, p_pager->crsr_r);
+		p_pager->crsr_c = p_row->size - 1;
+		
+	} else {
+		// Get row
+		p_row = (LList*)ll_get(p_pager->p_lines, p_pager->crsr_r);
+	}
+	
 	// delete character at cursor
 	// free discarded character
 	p_discard = ll_del(p_row, p_pager->crsr_c);

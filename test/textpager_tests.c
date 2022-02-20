@@ -142,6 +142,49 @@ void tp_delete_removes_character(void **state){
 	assert_string_equal("hell", string);
 }
 
+void tp_delete_begining_of_line(void **state){
+	TextPager* tp;
+	char* string;
+
+	tp = new_text_pager();
+
+	tp_push(tp, 'h');
+	tp_push(tp, 'e');
+	tp_push(tp, 'l');
+	tp_push(tp, 'l');
+	tp_push(tp, 'o');
+	tp_push(tp, '\n');
+
+	tp_move_col(tp, -1);
+	tp_delete(tp);
+
+	string = tp_get_str(tp);
+	assert_string_equal("hello", string);
+}
+
+void tp_delete_begining_of_line_one_char(void **state){
+	TextPager* tp;
+	char* string;
+
+	tp = new_text_pager();
+
+	tp_push(tp, 'h');
+	tp_push(tp, 'e');
+	tp_push(tp, 'l');
+	tp_push(tp, 'l');
+	tp_push(tp, 'o');
+	tp_push(tp, '\n');
+	tp_push(tp, 'h');
+
+	tp_move_col(tp, -1);
+	tp_delete(tp);
+	tp_move_col(tp, -1);
+	tp_delete(tp);
+
+	string = tp_get_str(tp);
+	assert_string_equal("hello", string);
+}
+
 /* These functions will be used to initialize
    and clean resources up after each test run */
 int setup (void ** state)
@@ -165,7 +208,9 @@ int main (void)
 		cmocka_unit_test (tp_push_newline_new_row_is_made),
 		cmocka_unit_test (tp_push_multiple_newlines_end_of_string_carries),
 		cmocka_unit_test (tp_mov_col__move_left_on_first_line__cursor_moves_left),
-		cmocka_unit_test (tp_delete_removes_character)
+		cmocka_unit_test (tp_delete_removes_character),
+		cmocka_unit_test (tp_delete_begining_of_line),
+		cmocka_unit_test (tp_delete_begining_of_line_one_char)
     };
 
     /* If setup and teardown functions are not
