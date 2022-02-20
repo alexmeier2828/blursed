@@ -135,6 +135,20 @@ void tp_push(TextPager* p_pager, char c){
 	}
 }
 
+void tp_delete(TextPager* p_pager){
+	LList* p_row;
+	char* p_discard;
+
+	// Get row
+	p_row = (LList*)ll_get(p_pager->p_lines, p_pager->crsr_r);
+
+	// delete character at cursor
+	// free discarded character
+	p_discard = ll_del(p_row, p_pager->crsr_c);
+	free(p_discard);
+}
+	
+
 char* tp_get_str(TextPager* p_pager){
 	LList* p_row;
 	int row_index;

@@ -79,6 +79,23 @@ int bfr_move_curser(CharBuffer* p_buffer, int x, int y){
 	wmove(p_buffer->p_win, winy, winx);
 }
 
+void bfr_backspace(CharBuffer* p_buffer){
+	int winx, winy;
+	int win_size_x, win_size_y;
+	
+	//TODO backspace in here should handle the out of bounds backspace scenario before calling delete. 
+	//Call delete, then move the cursr to the left one space 
+	tp_move_col(p_buffer->p_pager, -1);
+	tp_delete(p_buffer->p_pager);
+
+	//get window size
+	getmaxyx(p_buffer->p_win, win_size_y, win_size_x);
+	
+	//get adjusted cursor
+	tp_get_curses_cursor(p_buffer->p_pager, win_size_x, win_size_y, &winx, &winy);
+	wmove(p_buffer->p_win, winy, winx);
+}
+
 /**
  * Clears buffer, prints to window
  */
@@ -98,6 +115,7 @@ void bfr_refresh(CharBuffer* p_buffer){
 	getmaxyx(p_buffer->p_win, win_size_y, win_size_x);
 	
 	string = tp_get_str(p_buffer->p_pager);
+	werase(p_buffer->p_win);
 	wmove(p_buffer->p_win, 0, 0);
 	waddstr(p_buffer->p_win, string);
 

@@ -7,17 +7,22 @@
 #include "editorState.h"
 #include "editorModes.h"
 
+/**
+ * handle insert mode keystrokes
+ */
 void insert_mode(EditorState* p_state, int input_char){
 	switch(input_char){
-		case KEY_BACKSPACE:
-			// TODO backspace key
-			return;
 		case KEY_ESCAPE:
 			p_state->mode = NORMAL;
-			return; 
+			break;
+		case '\177':
+			bfr_backspace(p_state->currentBuffer);
+			bfr_refresh(p_state->currentBuffer);
+			break;
+		default:
+			bfr_put_char_to_curser(p_state->currentBuffer, (char)input_char);
+			bfr_refresh(p_state->currentBuffer);
+			break;
 	}
-
-	bfr_put_char_to_curser(p_state->currentBuffer, (char)input_char);
-	bfr_refresh(p_state->currentBuffer);
 }
 
