@@ -11,6 +11,8 @@ typedef enum {
 typedef struct {
 	EditorModeEnum mode;
 	CharBuffer* currentBuffer;
+	CharBuffer* commandBuffer;
+	CharBuffer* mainBuffer;
 	int running; 
 } EditorState;
 

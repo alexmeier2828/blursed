@@ -11,8 +11,11 @@
 
 int main(int argc, char** argv){
 	int input_char; 
+	int win_rows;
+	int win_cols;
 	EditorState* p_editor_state;
 	WINDOW* p_main_window;
+	WINDOW* p_command_window;
 	bool should_open_file;
 
 	// Command Line Arguments 
@@ -32,11 +35,16 @@ int main(int argc, char** argv){
 	noecho();   /* disables echoing keypresses */
 
 	// TODO better way to set window size
-	p_main_window = newwin(0, 0, 0, 0);
+	getmaxyx(stdscr, win_rows, win_cols);
+	p_main_window = newwin(win_rows - 1, win_cols, 1, 0);
+	p_command_window = newwin(1, win_cols, 0, 0);
 	
 	// editor setup
 	p_editor_state = new_editor_state();
 	p_editor_state->currentBuffer = create_buffer(p_main_window);
+	p_editor_state->mainBuffer = create_buffer(p_main_window);
+	p_editor_state->commandBuffer = create_buffer(p_command_window);
+
 	if(should_open_file){
 		bfr_load_file(p_editor_state->currentBuffer, argv[1]);
 	}
