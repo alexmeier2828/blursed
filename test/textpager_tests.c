@@ -185,6 +185,30 @@ void tp_delete_begining_of_line_one_char(void **state){
 	assert_string_equal("hello", string);
 }
 
+void tp_delete_multiple_lines_with_just_newlines(void **state){
+	TextPager* tp;
+	char* string;
+
+	tp = new_text_pager();
+
+	tp_push(tp, 'h');
+	tp_push(tp, 'e');
+	tp_push(tp, 'l');
+	tp_push(tp, 'l');
+	tp_push(tp, 'o');
+	tp_push(tp, '\n');
+	tp_push(tp, '\n');
+	tp_push(tp, '\n');
+	tp_push(tp, 'h');
+
+	tp_move_col(tp, -1);
+	tp_delete(tp);
+	tp_move_col(tp, -1);
+	tp_delete(tp);
+
+	string = tp_get_str(tp);
+	assert_string_equal("hello\n\n", string);
+}
 /* These functions will be used to initialize
    and clean resources up after each test run */
 int setup (void ** state)
@@ -210,7 +234,8 @@ int main (void)
 		cmocka_unit_test (tp_mov_col__move_left_on_first_line__cursor_moves_left),
 		cmocka_unit_test (tp_delete_removes_character),
 		cmocka_unit_test (tp_delete_begining_of_line),
-		cmocka_unit_test (tp_delete_begining_of_line_one_char)
+		cmocka_unit_test (tp_delete_begining_of_line_one_char),
+		cmocka_unit_test (tp_delete_multiple_lines_with_just_newlines)
     };
 
     /* If setup and teardown functions are not
