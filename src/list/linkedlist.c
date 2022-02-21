@@ -147,12 +147,17 @@ void* ll_pop(LList* p_list){
 	Link* old_tail;
 	void* item;
 
+	//if list is empty, return null
+	if(p_list->head == NULL){
+		return NULL;
+	}
+
 	if(p_list->size <= 0){
 		printf("ERROR called pop on empty list");
 		exit(1);
 	}
 
-	if(p_list->size >= 1){			
+	if(p_list->size > 1){			
 		new_tail = link_at(p_list->head, p_list->size - 2);
 		old_tail = new_tail->p_next;
 		new_tail->p_next = NULL;
