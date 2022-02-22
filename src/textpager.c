@@ -79,6 +79,19 @@ void tp_move_col(TextPager* p_pager, int d_col){
 	p_row = (LList*)ll_get(p_pager->p_lines, p_pager->crsr_r);
 	if(IN_BOUNDS(p_pager->crsr_c + d_col, p_row->size)){
 		p_pager->crsr_c += d_col;			
+	} else if(d_col > 0) {
+		// go to next line
+		if(p_pager->crsr_r < p_pager->p_lines->size){
+			p_pager->crsr_r++;
+			p_pager->crsr_c = 0;
+		}
+	} else {
+		// go to previous line
+		if(p_pager->crsr_r > 0){
+			p_pager->crsr_r --;
+			p_row = ll_get(p_pager->p_lines, p_pager->crsr_r);
+			p_pager->crsr_c = p_row->size -1;
+		}
 	}
 }
 
@@ -134,6 +147,42 @@ void tp_push(TextPager* p_pager, char c){
 		p_pager->crsr_r++;
 	}
 }
+
+void tp_delete(TextPager* p_pager){
+	LList* p_row;
+	LList* p_next_row;
+	char* p_discard;
+	char* p_temp;
+	int i;
+	
+	// Get row
+	p_row = (LList*)ll_get(p_pager->p_lines, p_pager->crsr_r);
+
+	// if deleteing a newline, get rid of the next line if it exists
+	if(*(char*)ll_get(p_row, p_pager->crsr_c) == '\n'){
+		
+		//copy next line to this one if it exists and delete
+		if(p_pager->p_lines->size > p_pager->crsr_r + 1){
+			p_next_row = (LList*)ll_get(p_pager->p_lines, p_pager->crsr_r + 1);
+
+			while(p_next_row->size > 0){
+				// copy characters over
+				p_temp = (char*)ll_pop(p_next_row);
+				ll_ins(p_row, p_pager->crsr_c, p_temp);
+			}
+
+			// delete next row
+			ll_del(p_pager->p_lines, p_pager->crsr_r + 1);
+			free_ll(&p_next_row, free_char);
+		}
+	}
+	
+	// delete character at cursor
+	// free discarded character
+	p_discard = ll_del(p_row, p_pager->crsr_c);
+	free(p_discard);
+}
+	
 
 char* tp_get_str(TextPager* p_pager){
 	LList* p_row;

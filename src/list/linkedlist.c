@@ -123,13 +123,18 @@ void* ll_del(LList* p_list, int i){
 		printf("ERROR index out of bounds");
 		exit(1);
 	}
+	
+	if(i > 0){
+		left = link_at(p_list->head, i - 1);
+		temp = left->p_next;
+		left->p_next = temp->p_next;
+	} else {
+		temp = p_list->head;
+		p_list->head = p_list->head->p_next;
+	}
 
-	left = link_at(p_list->head, i - 1);
-	temp = left->p_next;
-	left->p_next = temp->p_next;
 	item = temp->p_e;
 	free(temp);
-
 	p_list->size--;
 	return item;
 }
@@ -142,12 +147,17 @@ void* ll_pop(LList* p_list){
 	Link* old_tail;
 	void* item;
 
+	//if list is empty, return null
+	if(p_list->head == NULL){
+		return NULL;
+	}
+
 	if(p_list->size <= 0){
 		printf("ERROR called pop on empty list");
 		exit(1);
 	}
 
-	if(p_list->size >= 1){			
+	if(p_list->size > 1){			
 		new_tail = link_at(p_list->head, p_list->size - 2);
 		old_tail = new_tail->p_next;
 		new_tail->p_next = NULL;

@@ -31,6 +31,11 @@ void bfr_put_char_to_curser(CharBuffer* p_buffer, char c);
 int bfr_move_curser(CharBuffer* p_buffer, int x, int y);
 
 /**
+ * deletes character at cursor then moves cursor left one column
+ */
+void bfr_backspace(CharBuffer* p_buffer);
+
+/**
  * Clears buffer, prints to window
  */
 void bfr_clear(CharBuffer* p_buffer);
