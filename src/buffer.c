@@ -101,7 +101,8 @@ void bfr_backspace(CharBuffer* p_buffer){
  * Clears buffer, prints to window
  */
 void bfr_clear(CharBuffer* p_buffer){
-	// TODO figure out how to clear curses window
+	free_text_pager(&(p_buffer->p_pager));
+	p_buffer->p_pager = new_text_pager();
 }
 
 /**
