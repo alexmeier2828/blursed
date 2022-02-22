@@ -157,7 +157,15 @@ void bfr_load_file(CharBuffer* p_buffer, char* file_str){
 	fclose(file);
 }
 
-void bfr_save_to_file(CharBuffer* p_buffer){
-	printf("NotImplemented bfr_save_to_file");
-	exit(1);
+void bfr_write_to_file(CharBuffer* p_buffer, char* file_str){
+	FILE* file;
+	char* pager_str;
+
+	file = fopen(file_str, "w");	
+	pager_str = tp_get_str(p_buffer->p_pager);
+	fprintf(file, "%s", pager_str);
+
+	//cleanup
+	fclose(file);
+	free(pager_str);
 }
