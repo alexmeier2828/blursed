@@ -34,6 +34,8 @@ void command_mode(EditorState* p_state, int input_char){
 			bfr_refresh(p_state->commandBuffer);
 			break;
 	}
+	
+	free(command_str);
 }
 
 
@@ -55,11 +57,7 @@ void run_command(EditorState* p_state, char* command_str){
 			exit(0);
 		} else if(strcmp(command, "w") == 0) {
 			argument = strtok(NULL, " ");
-			if(argument != NULL){
-				write_command(p_state, argument);
-			}else{
-				//TODO call write command with previous file eddited with buffer
-			}
+			write_command(p_state, argument);
 		}
 	}
 
@@ -69,5 +67,13 @@ void run_command(EditorState* p_state, char* command_str){
  * write currentBuffer to the file specified
  */
 void write_command(EditorState* p_state, char* argument){
-	bfr_write_to_file(p_state->currentBuffer, argument);
+	if(argument != NULL){
+		bfr_write_to_file(p_state->currentBuffer, argument);
+	}else{
+		if(p_state->currentBuffer->current_file_str != NULL){
+			bfr_write_to_file(p_state->currentBuffer, p_state->currentBuffer->current_file_str);
+		}else{
+			//TODO do something when the user hasn't tried to buffer a file yet
+		}
+	}
 }
