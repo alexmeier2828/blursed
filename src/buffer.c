@@ -48,26 +48,7 @@ void free_buffer(CharBuffer** pBufferHandle){
  * puts character to buffer and advances curser
  */
 void bfr_put_char_to_curser(CharBuffer* p_buffer, char c){
-	int winx, winy;
-	int win_size_x, win_size_y;
-	char* string;
-
-	//get window size
-	getmaxyx(p_buffer->p_win, win_size_y, win_size_x);
-
 	tp_push(p_buffer->p_pager, c);
-	wmove(p_buffer->p_win, 0, 0);
-
-	string =  tp_get_str(p_buffer->p_pager);
-
-	// TODO I don't think its nessecary to add string in here.  it can be the callers responsibility to refresh the window
-	waddstr(p_buffer->p_win, string);
-	
-	//get adjusted cursor
-	tp_get_curses_cursor(p_buffer->p_pager, win_size_x, win_size_y, &winx, &winy);
-	wmove(p_buffer->p_win, winy, winx);
-
-	free(string);
 }
 
 /**
@@ -80,30 +61,25 @@ int bfr_move_curser(CharBuffer* p_buffer, int x, int y){
 	//get window size
 	getmaxyx(p_buffer->p_win, win_size_y, win_size_x);
 	
+	//get adjusted cursor
+	tp_get_curses_cursor(p_buffer->p_pager, win_size_x, win_size_y, &winx, &winy);
+
+	if(p_buffer->p_pager->crsr_r + y - p_buffer->p_pager->scroll_offset_y >= win_size_y || p_buffer->p_pager->crsr_r + y < p_buffer->p_pager->scroll_offset_y){
+		tp_scroll(p_buffer->p_pager, y);
+	}
+
 	// move text pager curser 
 	tp_move_row(p_buffer->p_pager, y);
 	tp_move_col(p_buffer->p_pager, x);
 
-	//get adjusted cursor
-	tp_get_curses_cursor(p_buffer->p_pager, win_size_x, win_size_y, &winx, &winy);
-	wmove(p_buffer->p_win, winy, winx);
+
 }
 
 void bfr_backspace(CharBuffer* p_buffer){
-	int winx, winy;
-	int win_size_x, win_size_y;
-
 	//Call delete, then move the cursr to the left one space 
 	if(p_buffer->p_pager->crsr_r != 0 || p_buffer->p_pager->crsr_c != 0){
 		tp_move_col(p_buffer->p_pager, -1);
 		tp_delete(p_buffer->p_pager);
-
-		//get window size
-		getmaxyx(p_buffer->p_win, win_size_y, win_size_x);
-		
-		//get adjusted cursor
-		tp_get_curses_cursor(p_buffer->p_pager, win_size_x, win_size_y, &winx, &winy);
-		wmove(p_buffer->p_win, winy, winx);
 	}
 }
 

@@ -8,6 +8,7 @@ typedef struct BUFFER {
 	TextPager* p_pager;	
 	WINDOW* p_win;		
 	char* current_file_str;
+	int scroll_offset_y;
 } CharBuffer;
 
 /**

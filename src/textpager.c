@@ -194,7 +194,7 @@ char* tp_get_str(TextPager* p_pager){
 
 	final_size = 0; 
 	//first find out the size so we can make a giant c string.  
-	for(row_index = 0; row_index < p_pager->p_lines->size; row_index++){
+	for(row_index = p_pager->scroll_offset_y; row_index < p_pager->p_lines->size; row_index++){
 		p_row = ll_get(p_pager->p_lines, row_index);
 		final_size += p_row->size;
 	}
@@ -208,7 +208,7 @@ char* tp_get_str(TextPager* p_pager){
 
 	// itterate through pager
 	i = 0;
-	for(row_index = 0; row_index < p_pager->p_lines->size; row_index++){
+	for(row_index = p_pager->scroll_offset_y; row_index < p_pager->p_lines->size; row_index++){
 		p_row = ll_get(p_pager->p_lines, row_index);
 		for(col_index = 0; col_index < p_row->size; col_index++){
 			cstring[i] = *(char*)ll_get(p_row, col_index);
@@ -220,6 +220,10 @@ char* tp_get_str(TextPager* p_pager){
 	return cstring;
 }
 
+void tp_scroll(TextPager* p_pager, int d){
+	p_pager->scroll_offset_y += d;
+}
+
 void tp_get_curses_cursor(TextPager* p_pager, int win_size_x, int win_size_y, int* x, int* y){
 	int adjusted_cursor_x, adjusted_cursor_y;
 	int	i; 
@@ -228,7 +232,7 @@ void tp_get_curses_cursor(TextPager* p_pager, int win_size_x, int win_size_y, in
 
 	// this is the curser value if none of the lines wrap
 	adjusted_cursor_y = p_pager->crsr_r;
-	for(i = 0; i <= p_pager->crsr_r; i++){
+	for(i = p_pager->scroll_offset_y; i <= p_pager->crsr_r; i++){
 		row = (LList*)ll_get(p_pager->p_lines, i);
 		if(row->size > win_size_x){
 			adjusted_cursor_y += row->size / win_size_x;

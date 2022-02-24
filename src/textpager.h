@@ -4,6 +4,7 @@ typedef struct {
 	LList* p_lines;
 	int crsr_r;
 	int crsr_c;
+	int scroll_offset_y;
 } TextPager;
 
 /*
@@ -41,6 +42,11 @@ void tp_delete(TextPager* p_pager);
  * TODO this will work but it's super ineficient 
  */
 char* tp_get_str(TextPager* p_pager);
+
+/*
+ * scroll pager down
+ */
+void tp_scroll(TextPager* p_pager, int d);
 
 /*
  * convert cursor cordinates to a curses window that might display this text pager.
