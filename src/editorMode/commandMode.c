@@ -34,8 +34,6 @@ void command_mode(EditorState* p_state, int input_char){
 			bfr_refresh(p_state->commandBuffer);
 			break;
 	}
-	
-	free(command_str);
 }
 
 
