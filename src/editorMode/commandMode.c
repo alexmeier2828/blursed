@@ -9,6 +9,7 @@
 #include "editorModes.h"
 
 void run_command(EditorState* p_state, char* command_str);
+void write_command(EditorState* p_state, char* argument);
 
 void command_mode(EditorState* p_state, int input_char){
 	char* command_str;
@@ -33,6 +34,8 @@ void command_mode(EditorState* p_state, int input_char){
 			bfr_refresh(p_state->commandBuffer);
 			break;
 	}
+	
+	free(command_str);
 }
 
 
@@ -52,7 +55,25 @@ void run_command(EditorState* p_state, char* command_str){
 		} else if(strcmp(command, "q") == 0) {
 			endwin();
 			exit(0);
+		} else if(strcmp(command, "w") == 0) {
+			argument = strtok(NULL, " ");
+			write_command(p_state, argument);
 		}
 	}
 
+}
+
+/**
+ * write currentBuffer to the file specified
+ */
+void write_command(EditorState* p_state, char* argument){
+	if(argument != NULL){
+		bfr_write_to_file(p_state->currentBuffer, argument);
+	}else{
+		if(p_state->currentBuffer->current_file_str != NULL){
+			bfr_write_to_file(p_state->currentBuffer, p_state->currentBuffer->current_file_str);
+		}else{
+			//TODO do something when the user hasn't tried to buffer a file yet
+		}
+	}
 }

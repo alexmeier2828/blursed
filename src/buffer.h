@@ -7,6 +7,7 @@
 typedef struct BUFFER {
 	TextPager* p_pager;	
 	WINDOW* p_win;		
+	char* current_file_str;
 } CharBuffer;
 
 /**
@@ -48,7 +49,7 @@ void bfr_refresh(CharBuffer* p_buffer);
 /**
  * save buffer to file
  */
-void bfr_save_to_file(CharBuffer* p_buffer);
+void bfr_write_to_file(CharBuffer* p_buffer, char* file_str);
 
 /**
  * load file into buffer
