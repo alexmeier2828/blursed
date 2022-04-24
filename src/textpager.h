@@ -5,12 +5,14 @@ typedef struct {
 	int crsr_r;
 	int crsr_c;
 	int scroll_offset_y;
+	int view_x;
+	int view_y;
 } TextPager;
 
 /*
  * allocate new text pager instance
  */
-TextPager* new_text_pager();
+TextPager* new_text_pager(int view_x, int view_y);
 
 /*
  * Deallocate pager instance

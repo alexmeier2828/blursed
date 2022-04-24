@@ -16,6 +16,8 @@ void set_current_file_str(CharBuffer* p_buffer, char* new_str);
 // Header Implementation
 CharBuffer* create_buffer(WINDOW* p_window){
 	CharBuffer* p_buffer;
+	int win_size_x, win_size_y;
+
 
 	p_buffer = malloc(sizeof(CharBuffer));
 	if(p_buffer == NULL){
@@ -24,8 +26,11 @@ CharBuffer* create_buffer(WINDOW* p_window){
 		exit(1);
 	}
 
+	//get window size
+	getmaxyx(p_window, win_size_y, win_size_x);
+
 	p_buffer->p_win = p_window; 
-	p_buffer->p_pager = new_text_pager();
+	p_buffer->p_pager = new_text_pager(win_size_x, win_size_y);
 	p_buffer->current_file_str = NULL;
 	
 	return p_buffer;
@@ -64,10 +69,6 @@ int bfr_move_curser(CharBuffer* p_buffer, int x, int y){
 	//get adjusted cursor
 	tp_get_curses_cursor(p_buffer->p_pager, win_size_x, win_size_y, &winx, &winy);
 
-	if(p_buffer->p_pager->crsr_r + y - p_buffer->p_pager->scroll_offset_y >= win_size_y || p_buffer->p_pager->crsr_r + y < p_buffer->p_pager->scroll_offset_y){
-		tp_scroll(p_buffer->p_pager, y);
-	}
-
 	// move text pager curser 
 	tp_move_row(p_buffer->p_pager, y);
 	tp_move_col(p_buffer->p_pager, x);
@@ -87,8 +88,13 @@ void bfr_backspace(CharBuffer* p_buffer){
  * Clears buffer, prints to window
  */
 void bfr_clear(CharBuffer* p_buffer){
+	int win_size_x, win_size_y;
+
+	//get window size
+	getmaxyx(p_buffer->p_win, win_size_y, win_size_x);
+
 	free_text_pager(&(p_buffer->p_pager));
-	p_buffer->p_pager = new_text_pager();
+	p_buffer->p_pager = new_text_pager(win_size_x, win_size_y);
 }
 
 /**

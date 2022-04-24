@@ -56,7 +56,6 @@ int main(int argc, char** argv){
 	// get input from keyboard in a loop
 	while(p_editor_state->running){
 		input_char = wgetch(p_main_window);
-		bfr_refresh(p_editor_state->currentBuffer);
 
 		//mode switch
 		switch(p_editor_state->mode){
@@ -74,6 +73,8 @@ int main(int argc, char** argv){
 				endwin();
 				exit(1);
 		}
+
+		bfr_refresh(p_editor_state->currentBuffer);
 	}
 
 	endwin();

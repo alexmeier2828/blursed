@@ -8,7 +8,7 @@
 void new_tp_returns_non_null(void ** state){
 	TextPager* p_pager;
 
-	p_pager = new_text_pager();
+	p_pager = new_text_pager(100, 100);
 
 	assert_non_null(p_pager);
 }
@@ -16,7 +16,7 @@ void new_tp_returns_non_null(void ** state){
 void free_tp_nulls_ptr(void ** state){
 	TextPager* p_pager;
 
-	p_pager = new_text_pager();
+	p_pager = new_text_pager(100, 100);
 	free_text_pager(&p_pager);
 
 	assert_null(p_pager);
@@ -26,7 +26,7 @@ void tp_push_and_get_str(void ** state){
 	TextPager* p_pager;
 	char* string; 
 
-	p_pager = new_text_pager();
+	p_pager = new_text_pager(100, 100);
 	tp_push(p_pager, 'h');
 	
 	string = tp_get_str(p_pager);
@@ -38,7 +38,7 @@ void tp_push_newline_new_row_is_made(void ** state){
 	TextPager* p_pager;
 	char* string;
 
-	p_pager = new_text_pager();
+	p_pager = new_text_pager(100, 100);
 	tp_push(p_pager, 'h');
 	tp_push(p_pager, 'e');
 	tp_push(p_pager, 'l');
@@ -62,7 +62,7 @@ void tp_push_multiple_newlines_end_of_string_carries(void **state){
 	TextPager* pager; 
 	char* string;
 
-	pager = new_text_pager();
+	pager = new_text_pager(100, 100);
 
 	tp_push(pager, 'h');
 	tp_push(pager, 'e');
@@ -95,7 +95,7 @@ void tp_mov_col__move_left_on_first_line__cursor_moves_left(void **state){
 	int winx, winy;
 	char* string;
 
-	pager = new_text_pager();
+	pager = new_text_pager(100, 100);
 
 	tp_push(pager, 'a');
 	tp_push(pager, 'b');
@@ -127,7 +127,7 @@ void tp_delete_removes_character(void **state){
 	TextPager* tp;
 	char* string;
 
-	tp = new_text_pager();
+	tp = new_text_pager(100, 100);
 
 	tp_push(tp, 'h');
 	tp_push(tp, 'e');
@@ -146,7 +146,7 @@ void tp_delete_begining_of_line(void **state){
 	TextPager* tp;
 	char* string;
 
-	tp = new_text_pager();
+	tp = new_text_pager(100, 100);
 
 	tp_push(tp, 'h');
 	tp_push(tp, 'e');
@@ -166,7 +166,7 @@ void tp_delete_begining_of_line_one_char(void **state){
 	TextPager* tp;
 	char* string;
 
-	tp = new_text_pager();
+	tp = new_text_pager(100, 100);
 
 	tp_push(tp, 'h');
 	tp_push(tp, 'e');
@@ -189,7 +189,7 @@ void tp_delete_multiple_lines_with_just_newlines(void **state){
 	TextPager* tp;
 	char* string;
 
-	tp = new_text_pager();
+	tp = new_text_pager(100, 100);
 
 	tp_push(tp, 'h');
 	tp_push(tp, 'e');
