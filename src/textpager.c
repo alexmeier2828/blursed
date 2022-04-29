@@ -235,10 +235,6 @@ char* tp_get_str(TextPager* p_pager){
 	return cstring;
 }
 
-void tp_scroll(TextPager* p_pager, int d){
-	p_pager->scroll_offset_y += d;
-}
-
 void tp_get_curses_cursor(TextPager* p_pager, int win_size_x, int win_size_y, int* x, int* y){
 	int adjusted_cursor_x, adjusted_cursor_y;
 	int	i; 

@@ -46,11 +46,6 @@ void tp_delete(TextPager* p_pager);
 char* tp_get_str(TextPager* p_pager);
 
 /*
- * scroll pager down
- */
-void tp_scroll(TextPager* p_pager, int d);
-
-/*
  * convert cursor cordinates to a curses window that might display this text pager.
  * the resulting x/y conversion is placed in the parameters x and y. 
  */
