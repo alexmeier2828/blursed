@@ -209,6 +209,38 @@ void tp_delete_multiple_lines_with_just_newlines(void **state){
 	string = tp_get_str(tp);
 	assert_string_equal("hello\n\n", string);
 }
+
+void tp_move_row_scroll(void **state){
+	TextPager* tp;
+	char* string;
+	int curser_x;
+	int curser_y;
+
+	tp = new_text_pager(100, 4);
+
+	tp_push(tp, 't');
+	tp_push(tp, '\n');
+	tp_push(tp, '\n');
+	tp_push(tp, '\n');
+	tp_push(tp, '\n');
+	tp_push(tp, '\n');
+	tp_push(tp, 'b');
+
+	tp_get_curses_cursor(tp, 100, 4, &curser_x, &curser_y);
+	assert_int_equal(3, curser_y);
+
+	string = tp_get_str(tp);
+	assert_string_equal("\n\n\nb", string);
+
+	tp_move_row(tp, -5); // scroll to top
+	
+	string = tp_get_str(tp);
+	assert_string_equal("t\n\n\n\n", string);
+
+	tp_get_curses_cursor(tp, 100, 4, &curser_x, &curser_y);
+	assert_int_equal(0, curser_y);
+}
+
 /* These functions will be used to initialize
    and clean resources up after each test run */
 int setup (void ** state)
@@ -235,7 +267,8 @@ int main (void)
 		cmocka_unit_test (tp_delete_removes_character),
 		cmocka_unit_test (tp_delete_begining_of_line),
 		cmocka_unit_test (tp_delete_begining_of_line_one_char),
-		cmocka_unit_test (tp_delete_multiple_lines_with_just_newlines)
+		cmocka_unit_test (tp_delete_multiple_lines_with_just_newlines),
+		cmocka_unit_test (tp_move_row_scroll)
     };
 
     /* If setup and teardown functions are not

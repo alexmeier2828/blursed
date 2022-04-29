@@ -196,6 +196,7 @@ char* tp_get_str(TextPager* p_pager){
 	LList* p_row;
 	int row_index;
 	int col_index; 
+	int draw_height;
 	int final_size; 
 	int i;
 	char* cstring;
@@ -213,10 +214,16 @@ char* tp_get_str(TextPager* p_pager){
 		printf("ERROR: TP: malloc error");
 		exit(1);
 	}
-
 	// itterate through pager
 	i = 0;
-	for(row_index = p_pager->scroll_offset_y; row_index < p_pager->p_lines->size; row_index++){
+
+	// This code alows the text pager to only show as many lines as can be displayed at a time
+	// This will probably overestimate when there are wrapped lines, but thats ok because
+	// curses will just take it anyway without displaying. 
+	draw_height = p_pager->view_y + p_pager->scroll_offset_y;
+	draw_height = draw_height < p_pager->p_lines->size ? draw_height : p_pager->p_lines->size;
+
+	for(row_index = p_pager->scroll_offset_y; row_index < draw_height; row_index++){
 		p_row = ll_get(p_pager->p_lines, row_index);
 		for(col_index = 0; col_index < p_row->size; col_index++){
 			cstring[i] = *(char*)ll_get(p_row, col_index);
