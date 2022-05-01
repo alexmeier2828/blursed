@@ -16,6 +16,8 @@ void set_current_file_str(CharBuffer* p_buffer, char* new_str);
 // Header Implementation
 CharBuffer* create_buffer(WINDOW* p_window){
 	CharBuffer* p_buffer;
+	int win_size_x, win_size_y;
+
 
 	p_buffer = malloc(sizeof(CharBuffer));
 	if(p_buffer == NULL){
@@ -24,8 +26,11 @@ CharBuffer* create_buffer(WINDOW* p_window){
 		exit(1);
 	}
 
+	//get window size
+	getmaxyx(p_window, win_size_y, win_size_x);
+
 	p_buffer->p_win = p_window; 
-	p_buffer->p_pager = new_text_pager();
+	p_buffer->p_pager = new_text_pager(win_size_x, win_size_y);
 	p_buffer->current_file_str = NULL;
 	
 	return p_buffer;
@@ -48,26 +53,7 @@ void free_buffer(CharBuffer** pBufferHandle){
  * puts character to buffer and advances curser
  */
 void bfr_put_char_to_curser(CharBuffer* p_buffer, char c){
-	int winx, winy;
-	int win_size_x, win_size_y;
-	char* string;
-
-	//get window size
-	getmaxyx(p_buffer->p_win, win_size_y, win_size_x);
-
 	tp_push(p_buffer->p_pager, c);
-	wmove(p_buffer->p_win, 0, 0);
-
-	string =  tp_get_str(p_buffer->p_pager);
-
-	// TODO I don't think its nessecary to add string in here.  it can be the callers responsibility to refresh the window
-	waddstr(p_buffer->p_win, string);
-	
-	//get adjusted cursor
-	tp_get_curses_cursor(p_buffer->p_pager, win_size_x, win_size_y, &winx, &winy);
-	wmove(p_buffer->p_win, winy, winx);
-
-	free(string);
 }
 
 /**
@@ -80,30 +66,21 @@ int bfr_move_curser(CharBuffer* p_buffer, int x, int y){
 	//get window size
 	getmaxyx(p_buffer->p_win, win_size_y, win_size_x);
 	
+	//get adjusted cursor
+	tp_get_curses_cursor(p_buffer->p_pager, win_size_x, win_size_y, &winx, &winy);
+
 	// move text pager curser 
 	tp_move_row(p_buffer->p_pager, y);
 	tp_move_col(p_buffer->p_pager, x);
 
-	//get adjusted cursor
-	tp_get_curses_cursor(p_buffer->p_pager, win_size_x, win_size_y, &winx, &winy);
-	wmove(p_buffer->p_win, winy, winx);
+
 }
 
 void bfr_backspace(CharBuffer* p_buffer){
-	int winx, winy;
-	int win_size_x, win_size_y;
-
 	//Call delete, then move the cursr to the left one space 
 	if(p_buffer->p_pager->crsr_r != 0 || p_buffer->p_pager->crsr_c != 0){
 		tp_move_col(p_buffer->p_pager, -1);
 		tp_delete(p_buffer->p_pager);
-
-		//get window size
-		getmaxyx(p_buffer->p_win, win_size_y, win_size_x);
-		
-		//get adjusted cursor
-		tp_get_curses_cursor(p_buffer->p_pager, win_size_x, win_size_y, &winx, &winy);
-		wmove(p_buffer->p_win, winy, winx);
 	}
 }
 
@@ -111,8 +88,13 @@ void bfr_backspace(CharBuffer* p_buffer){
  * Clears buffer, prints to window
  */
 void bfr_clear(CharBuffer* p_buffer){
+	int win_size_x, win_size_y;
+
+	//get window size
+	getmaxyx(p_buffer->p_win, win_size_y, win_size_x);
+
 	free_text_pager(&(p_buffer->p_pager));
-	p_buffer->p_pager = new_text_pager();
+	p_buffer->p_pager = new_text_pager(win_size_x, win_size_y);
 }
 
 /**

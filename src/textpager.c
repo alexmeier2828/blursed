@@ -8,8 +8,9 @@
 
 void free_row(void* p_row);
 void free_char(void* p_char);
+void scroll_to_fit(TextPager* p_pager);
 
-TextPager* new_text_pager()
+TextPager* new_text_pager(int view_x, int view_y)
 {
 	TextPager* p_pager;
 
@@ -23,6 +24,8 @@ TextPager* new_text_pager()
 	p_pager-> p_lines = new_ll();
 	p_pager-> crsr_r = 0; 
 	p_pager-> crsr_c = 0;
+	p_pager->view_x = view_x;
+	p_pager->view_y = view_y;
 
 	//first row
 	ll_push(p_pager->p_lines, new_ll());
@@ -63,6 +66,8 @@ void tp_move_row(TextPager* p_pager, int d_row){
 			p_pager->crsr_c = new_row->size - 1;
 		}
 	}
+
+	scroll_to_fit(p_pager);
 }
 
 /**
@@ -145,6 +150,9 @@ void tp_push(TextPager* p_pager, char c){
 		ll_ins(p_pager->p_lines, p_pager->crsr_r + 1, new_row);
 		p_pager->crsr_c = 0;  // reset cursor
 		p_pager->crsr_r++;
+
+		// Scroll the pane if the cursor is now outside of the view pane
+		scroll_to_fit(p_pager);
 	}
 }
 
@@ -188,13 +196,14 @@ char* tp_get_str(TextPager* p_pager){
 	LList* p_row;
 	int row_index;
 	int col_index; 
+	int draw_height;
 	int final_size; 
 	int i;
 	char* cstring;
 
 	final_size = 0; 
 	//first find out the size so we can make a giant c string.  
-	for(row_index = 0; row_index < p_pager->p_lines->size; row_index++){
+	for(row_index = p_pager->scroll_offset_y; row_index < p_pager->p_lines->size; row_index++){
 		p_row = ll_get(p_pager->p_lines, row_index);
 		final_size += p_row->size;
 	}
@@ -205,10 +214,16 @@ char* tp_get_str(TextPager* p_pager){
 		printf("ERROR: TP: malloc error");
 		exit(1);
 	}
-
 	// itterate through pager
 	i = 0;
-	for(row_index = 0; row_index < p_pager->p_lines->size; row_index++){
+
+	// This code alows the text pager to only show as many lines as can be displayed at a time
+	// This will probably overestimate when there are wrapped lines, but thats ok because
+	// curses will just take it anyway without displaying. 
+	draw_height = p_pager->view_y + p_pager->scroll_offset_y;
+	draw_height = draw_height < p_pager->p_lines->size ? draw_height : p_pager->p_lines->size;
+
+	for(row_index = p_pager->scroll_offset_y; row_index < draw_height; row_index++){
 		p_row = ll_get(p_pager->p_lines, row_index);
 		for(col_index = 0; col_index < p_row->size; col_index++){
 			cstring[i] = *(char*)ll_get(p_row, col_index);
@@ -227,8 +242,8 @@ void tp_get_curses_cursor(TextPager* p_pager, int win_size_x, int win_size_y, in
 	
 
 	// this is the curser value if none of the lines wrap
-	adjusted_cursor_y = p_pager->crsr_r;
-	for(i = 0; i <= p_pager->crsr_r; i++){
+	adjusted_cursor_y = p_pager->crsr_r - p_pager->scroll_offset_y;
+	for(i = p_pager->scroll_offset_y; i <= p_pager->crsr_r; i++){
 		row = (LList*)ll_get(p_pager->p_lines, i);
 		if(row->size > win_size_x){
 			adjusted_cursor_y += row->size / win_size_x;
@@ -250,3 +265,12 @@ void free_char(void* p_char){
 	free((char*)p_char);
 }
 
+void scroll_to_fit(TextPager* p_pager){
+	// if the cursor is now outside of the view pane, scroll to fit
+	if(p_pager->crsr_r - p_pager->scroll_offset_y >= p_pager->view_y){
+		p_pager->scroll_offset_y += p_pager->crsr_r - p_pager->scroll_offset_y - p_pager->view_y + 1;
+	} 
+	else if(p_pager->crsr_r < p_pager->scroll_offset_y){
+		p_pager->scroll_offset_y = p_pager->crsr_r;
+	}
+}
