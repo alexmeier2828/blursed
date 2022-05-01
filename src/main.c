@@ -20,7 +20,7 @@ int main(int argc, char** argv){
 
 	// Command Line Arguments 
 	if(argc > 2){
-		printf("Usage: MicroEdit {file}");
+		printf("Usage: blursed {file}");
 		exit(1);
 	}else if(argc == 2){
 		//TODO configuration
