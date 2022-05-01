@@ -57,6 +57,7 @@ void bfr_put_char_to_curser(CharBuffer* p_buffer, char c){
 		case '\t':
 			tp_push(p_buffer->p_pager, ' ');
 			tp_push(p_buffer->p_pager, ' ');
+			break;
 		default:
 			tp_push(p_buffer->p_pager, c);
 	}
@@ -147,6 +148,7 @@ void bfr_load_file(CharBuffer* p_buffer, char* file_str){
 				case '\t':
 					tp_push(p_buffer->p_pager, ' ');
 					tp_push(p_buffer->p_pager, ' ');
+					break;
 				default:
 					tp_push(p_buffer->p_pager, read_char);
 			}
