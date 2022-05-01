@@ -104,6 +104,7 @@ void tp_push(TextPager* p_pager, char c){
 	LList* p_row; 
 	char* p_char_handle;
 	int i, size_diff; 
+	int tab_level;
 	LList* new_row;
 
 	
@@ -127,28 +128,39 @@ void tp_push(TextPager* p_pager, char c){
 	p_row = (LList*)ll_get(p_pager->p_lines, p_pager->crsr_r);
 	ll_ins(p_row, p_pager->crsr_c, p_char_handle);
 	p_pager->crsr_c++;
-	
+
 	// create new line on new line
 	if(c == '\n'){
-		//add carage return
-		p_char_handle = malloc(sizeof(char));
-		if(p_char_handle == NULL){
-			printf("ERROR: TP: malloc error");
-			exit(1);
-		}
-		//*p_char_handle = '\r';
-		//ll_ins(p_row, p_pager->crsr_c, p_char_handle);
-		
-		//copy end of line to new row
+
 		new_row = new_ll();
 		size_diff = p_row->size - p_pager->crsr_c;
+
+		// match tab level
+		for(tab_level = 0; tab_level < p_pager->crsr_c; tab_level++){
+			// allocate space for character
+			p_char_handle = malloc(sizeof(char));
+			if(p_char_handle == NULL){
+				printf("ERROR: TP: malloc error");
+				exit(1);
+			}
+			*p_char_handle = *(char*)ll_get(p_row, tab_level);
+			if(*p_char_handle == ' '){
+				ll_ins(new_row, 0, p_char_handle);
+			}
+			else{
+				free(p_char_handle);
+				break;
+			}
+		}
+
+		//copy end of line to new row 
 		for(i = 0; i < size_diff; i++){
 			p_char_handle = (char*)ll_pop(p_row);
-			ll_ins(new_row, 0, p_char_handle);
+			ll_ins(new_row, tab_level, p_char_handle);
 		}
 
 		ll_ins(p_pager->p_lines, p_pager->crsr_r + 1, new_row);
-		p_pager->crsr_c = 0;  // reset cursor
+		p_pager->crsr_c = tab_level;  // reset cursor
 		p_pager->crsr_r++;
 
 		// Scroll the pane if the cursor is now outside of the view pane
@@ -200,6 +212,7 @@ char* tp_get_str(TextPager* p_pager){
 	int final_size; 
 	int i;
 	char* cstring;
+	char char_to_add;
 
 	final_size = 0; 
 	//first find out the size so we can make a giant c string.  
@@ -226,7 +239,18 @@ char* tp_get_str(TextPager* p_pager){
 	for(row_index = p_pager->scroll_offset_y; row_index < draw_height; row_index++){
 		p_row = ll_get(p_pager->p_lines, row_index);
 		for(col_index = 0; col_index < p_row->size; col_index++){
-			cstring[i] = *(char*)ll_get(p_row, col_index);
+			char_to_add = *(char*)ll_get(p_row, col_index);
+
+			//TODO this is really not an ideal way to handle tabs, but this will get refactore at some point when I implement a wrapper class to handle the cursor position and line wrapping
+			//Also, at the moment, this doesn't do anything, since we never add tabs to the textPagers
+			//Internal 
+			switch(char_to_add){
+				case '\t':
+					cstring[i] = ' ';
+					break;
+				default:
+					cstring[i] = char_to_add;
+			}
 			i++;
 		}
 	}
