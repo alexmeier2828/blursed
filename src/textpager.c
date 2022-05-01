@@ -200,6 +200,7 @@ char* tp_get_str(TextPager* p_pager){
 	int final_size; 
 	int i;
 	char* cstring;
+	char char_to_add;
 
 	final_size = 0; 
 	//first find out the size so we can make a giant c string.  
@@ -226,7 +227,16 @@ char* tp_get_str(TextPager* p_pager){
 	for(row_index = p_pager->scroll_offset_y; row_index < draw_height; row_index++){
 		p_row = ll_get(p_pager->p_lines, row_index);
 		for(col_index = 0; col_index < p_row->size; col_index++){
-			cstring[i] = *(char*)ll_get(p_row, col_index);
+			char_to_add = *(char*)ll_get(p_row, col_index);
+
+			//TODO this is really not an ideal way to handle tabs, but this will get refactore at some point when I implement a wrapper class to handle the cursor position and line wrapping
+			switch(char_to_add){
+				case '\t':
+					cstring[i] = ' ';
+					break;
+				default:
+					cstring[i] = char_to_add;
+			}
 			i++;
 		}
 	}

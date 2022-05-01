@@ -53,7 +53,13 @@ void free_buffer(CharBuffer** pBufferHandle){
  * puts character to buffer and advances curser
  */
 void bfr_put_char_to_curser(CharBuffer* p_buffer, char c){
-	tp_push(p_buffer->p_pager, c);
+	switch(c){
+		case '\t':
+			tp_push(p_buffer->p_pager, ' ');
+			tp_push(p_buffer->p_pager, ' ');
+		default:
+			tp_push(p_buffer->p_pager, c);
+	}
 }
 
 /**
@@ -137,7 +143,13 @@ void bfr_load_file(CharBuffer* p_buffer, char* file_str){
 		//read from file character by character
 		// TODO need to check if this is any less efficient than using scanf or reading line by line
 		while((read_char = fgetc(file)) != EOF){
-			tp_push(p_buffer->p_pager, read_char);
+			switch(read_char){
+				case '\t':
+					tp_push(p_buffer->p_pager, ' ');
+					tp_push(p_buffer->p_pager, ' ');
+				default:
+					tp_push(p_buffer->p_pager, read_char);
+			}
 		}
 		
 		tp_move_col(p_buffer->p_pager, - p_buffer->p_pager->crsr_c);
@@ -146,7 +158,7 @@ void bfr_load_file(CharBuffer* p_buffer, char* file_str){
 		//close file stream
 		fclose(file);
 	} else {
-		// TODO do something when 
+		// TODO do something when file can't be opened
 	}
 
 }
