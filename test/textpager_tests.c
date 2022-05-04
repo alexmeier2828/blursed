@@ -241,6 +241,26 @@ void tp_move_row_scroll(void **state){
 	assert_int_equal(0, curser_y);
 }
 
+void tp_move_cursor_empty_document(void **state){
+	TextPager* tp;
+	char* string;
+	int curser_x;
+	int curser_y;
+
+	tp = new_text_pager(100, 4);
+	
+	// Move curser in all directions
+	tp_move_col(tp, -1);
+	assert_int_equal(0, tp->crsr_c);
+	tp_move_col(tp, 1);
+	assert_int_equal(0, tp->crsr_c);
+	tp_move_row(tp, -1);
+	assert_int_equal(0, tp->crsr_r);
+	tp_move_row(tp, 1);
+	assert_int_equal(0, tp->crsr_r);
+
+}
+
 /* These functions will be used to initialize
    and clean resources up after each test run */
 int setup (void ** state)
@@ -268,7 +288,8 @@ int main (void)
 		cmocka_unit_test (tp_delete_begining_of_line),
 		cmocka_unit_test (tp_delete_begining_of_line_one_char),
 		cmocka_unit_test (tp_delete_multiple_lines_with_just_newlines),
-		cmocka_unit_test (tp_move_row_scroll)
+		cmocka_unit_test (tp_move_row_scroll),
+		cmocka_unit_test (tp_move_cursor_empty_document)
     };
 
     /* If setup and teardown functions are not
