@@ -86,7 +86,7 @@ void tp_move_col(TextPager* p_pager, int d_col){
 		p_pager->crsr_c += d_col;			
 	} else if(d_col > 0) {
 		// go to next line
-		if(p_pager->crsr_r < p_pager->p_lines->size){
+		if(p_pager->crsr_r < p_pager->p_lines->size - 1){
 			p_pager->crsr_r++;
 			p_pager->crsr_c = 0;
 		}
