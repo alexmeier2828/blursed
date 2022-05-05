@@ -10,13 +10,16 @@ add_executable(linkedlist_tests linkedlist_test.c)
 add_executable(textpager_tests textpager_tests.c ${CMAKE_SOURCE_DIR}/src/textpager.c)
 
 add_executable(editorState_tests editorStateTests.c)
+add_executable(dict_tests dictionary_test.c)
 
 target_link_libraries(linkedlist_tests PRIVATE cmocka-static list)
 target_link_libraries(textpager_tests PRIVATE cmocka-static list)
 target_link_libraries(editorState_tests PRIVATE cmocka-static list me_state)
+target_link_libraries(dict_tests PRIVATE cmocka-static dict)
 
 #tests
 enable_testing()
 add_test(linkedList linkedlist_tests)
 add_test(textPager, textpager_tests)
 add_test(editorState, editorState_tests)
+add_test(dictionary, dict_tests)

@@ -7,9 +7,9 @@ typedef struct {
 	void* obj;
 } Dict;
 
-Dict* new_dict();
-Dict* free_dict(Dict** dict, DictAction free_value);
-int dict_try_get(char* key, void** value);
-int dict_add(char* key, void* value);
+Dict* new_dict(DictAction);
+Dict* free_dict(Dict** dict);
+int dict_try_get(Dict* handle, char* key, void** value);
+void dict_add(Dict* handle, char* key, void* value);
 
 #endif
